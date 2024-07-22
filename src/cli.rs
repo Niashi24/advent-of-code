@@ -1,11 +1,11 @@
-use std::{env, io};
+use crate::day::{Answer, Day, DaysMeta, Example};
+use clap::{arg, command, value_parser, Command};
 use std::ffi::OsString;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Cursor};
 use std::path::PathBuf;
-use clap::{arg, Command, command, value_parser};
+use std::{env, io};
 use thiserror::Error;
-use crate::day::{Answer, Day, DaysMeta, Example};
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum RunType {
@@ -24,69 +24,67 @@ impl RunType {
                 arg!(
                     -d --day <DAY> "The day to run"
                 )
-                    .required(false)
-                    .value_parser(value_parser!(i32)),
+                .required(false)
+                .value_parser(value_parser!(i32)),
             )
             .arg(
                 arg!(
                     -y --year <YEAR> "The year to run"
                 )
-                    .required(false)
-                    .value_parser(value_parser!(i32)),
+                .required(false)
+                .value_parser(value_parser!(i32)),
             )
             .arg(
                 arg!(
                     -e --example "Run example only"
                 )
-                    .required(false)
+                .required(false),
             )
             .arg(
                 arg!(
                     -a --all "Run example and full (if example succeeds)"
                 )
-                    .required(false)
+                .required(false),
             )
             .arg(
                 arg!(
                     -f --file <FILE> "Run with file as input"
                 )
-                    .required(false)
-                    .value_parser(value_parser!(PathBuf))
+                .required(false)
+                .value_parser(value_parser!(PathBuf)),
             )
             .arg(
                 arg!(
                     -t --text <TEXT> "Run with text as input"
                 )
-                    .required(false)
-                    .value_parser(value_parser!(String))
+                .required(false)
+                .value_parser(value_parser!(String)),
             )
-            .arg(
-                arg!(
-                    -'1' --one "Run part 1"
-                )
-            )
-            .arg(
-                arg!(
-                    -'2' --two "Run part 2"
-                )
-            )
+            .arg(arg!(
+                -'1' --one "Run part 1"
+            ))
+            .arg(arg!(
+                -'2' --two "Run part 2"
+            ))
     }
 
     pub fn parse_from<I, T>(itr: I) -> Self
     where
-        I: IntoIterator<Item=T>,
+        I: IntoIterator<Item = T>,
         T: Into<OsString> + Clone,
     {
-        let matches = Self::command()
-            .get_matches_from(itr);
+        let matches = Self::command().get_matches_from(itr);
 
-        if let (Some(&day), Some(&year)) = (matches.get_one::<i32>("day"), matches.get_one::<i32>("year")) {
+        if let (Some(&day), Some(&year)) = (
+            matches.get_one::<i32>("day"),
+            matches.get_one::<i32>("year"),
+        ) {
             let part = match (matches.get_flag("one"), matches.get_flag("two")) {
                 (true, true) | (false, false) => PartArgs::Both,
                 (true, false) => PartArgs::P1,
                 (false, true) => PartArgs::P2,
             };
-            
+
             let source = if matches.get_flag("all") {
                 RunSource::Example(ExampleSource::All)
             } else if matches.get_flag("example") {
@@ -139,8 +137,7 @@ pub enum ReadersError {
 
 pub enum SourceReader {
     Simple(Box<dyn BufRead>),
-    Example(ExampleReader),
-    ExampleFull(ExampleReader, Box<dyn BufRead>),
+    Example(ExampleReader, Option<Box<dyn BufRead>>),
 }
 
 pub enum ExampleReader {
@@ -161,11 +158,14 @@ impl RunSource {
         match self {
             RunSource::Example(example) => {
                 let Some(day_info) = meta.get_day(day) else {
-                    return Err(ReadersError::NoMeta(day))
+                    return Err(ReadersError::NoMeta(day));
                 };
 
                 let reader: Result<ExampleReader, ReadersError> = match day_info.example.clone() {
-                    Example::Single { path, expected_answer } => {
+                    Example::Single {
+                        path,
+                        expected_answer,
+                    } => {
                         let file = File::open(path)?;
                         Ok(ExampleReader::Single {
                             file: Box::new(BufReader::new(file)),
@@ -173,12 +173,14 @@ impl RunSource {
                         })
                     }
                     Example::Multi {
-                        path_1, expected_answer_1,
-                        path_2, expected_answer_2
+                        path_1,
+                        expected_answer_1,
+                        path_2,
+                        expected_answer_2,
                     } => {
                         let file_1 = File::open(path_1)?;
                         let file_2 = File::open(path_2)?;
-                        
+
                         Ok(ExampleReader::Multi {
                             file_1: Box::new(Box::new(BufReader::new(file_1))),
                             expected_answer_1,
@@ -187,38 +189,36 @@ impl RunSource {
                         })
                     }
                 };
-                
+
                 let reader = reader?;
-                
+
                 match example {
-                    ExampleSource::ExampleOnly => Ok(SourceReader::Example(reader)),
+                    ExampleSource::ExampleOnly => Ok(SourceReader::Example(reader, None)),
                     ExampleSource::All => {
                         let file = File::open(&day_info.full)?;
                         let full_reader = Box::new(BufReader::new(file));
-                        Ok(SourceReader::ExampleFull(reader, full_reader))
+                        Ok(SourceReader::Example(reader, Some(full_reader)))
                     }
                 }
             }
-            RunSource::Single(single) => {
-                match single {
-                    SingleSource::File(file) => {
-                        let file = File::open(file)?;
-                        Ok(SourceReader::Simple(Box::new(BufReader::new(file))))
-                    }
-                    SingleSource::Text(text) => {
-                        let cursor = Cursor::new(text);
-                        Ok(SourceReader::Simple(Box::new(cursor)))
-                    }
-                    SingleSource::Full => {
-                        let Some(day_info) = meta.get_day(day) else {
-                            return Err(ReadersError::NoMeta(day))
-                        };
+            RunSource::Single(single) => match single {
+                SingleSource::File(file) => {
+                    let file = File::open(file)?;
+                    Ok(SourceReader::Simple(Box::new(BufReader::new(file))))
+                }
+                SingleSource::Text(text) => {
+                    let cursor = Cursor::new(text);
+                    Ok(SourceReader::Simple(Box::new(cursor)))
+                }
+                SingleSource::Full => {
+                    let Some(day_info) = meta.get_day(day) else {
+                        return Err(ReadersError::NoMeta(day));
+                    };
 
-                        let file = File::open(&day_info.full)?;
-                        Ok(SourceReader::Simple(Box::new(BufReader::new(file))))
-                    }
+                    let file = File::open(&day_info.full)?;
+                    Ok(SourceReader::Simple(Box::new(BufReader::new(file))))
                 }
-            }
+            },
         }
     }
 }
@@ -240,7 +240,7 @@ pub enum ExampleSource {
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum SingleSource {
     Full,
-    File(PathBuf),  // -f or --file
+    File(PathBuf), // -f or --file
     Text(String),  // -t or --text
 }
 

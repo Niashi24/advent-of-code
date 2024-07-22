@@ -1,14 +1,13 @@
-[
-  {
-    "full": "data/full-1-21.txt",
+{
+  "1-2022": {
+    "full": "data/meta.json",
     "example": {
       "Single": {
-        "path": "data/ex-1-21.txt",
+        "path": "data/ex_1_21.txt",
         "expected_answer": {
-          "part_1": "7",
-          "part_2": null
+          "P1": "7"
         }
       }
     }
   }
-]
+}
