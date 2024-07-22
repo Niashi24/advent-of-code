@@ -11,6 +11,7 @@ use thiserror::Error;
 pub enum RunType {
     Interactive,
     Args(RunArgs),
+    All,
 }
 
 impl RunType {
@@ -42,7 +43,13 @@ impl RunType {
             )
             .arg(
                 arg!(
-                    -a --all "Run example and full (if example succeeds)"
+                    -a --all "Run all days"
+                )
+                .required(false),
+            )
+            .arg(
+                arg!(
+                    -m --main "Run main input"
                 )
                 .required(false),
             )
@@ -75,7 +82,9 @@ impl RunType {
     {
         let matches = Self::command().get_matches_from(itr);
 
-        if let (Some(&day), Some(&year)) = (
+        if matches.get_flag("all") {
+            RunType::All
+        } else if let (Some(&day), Some(&year)) = (
             matches.get_one::<i32>("day"),
             matches.get_one::<i32>("year"),
         ) {
@@ -85,8 +94,8 @@ impl RunType {
                 (false, true) => PartArgs::P2,
             };
 
-            let source = if matches.get_flag("all") {
-                RunSource::Example(ExampleSource::All)
+            let source = if matches.get_flag("main") {
+                RunSource::Example(ExampleSource::Main)
             } else if matches.get_flag("example") {
                 RunSource::Example(ExampleSource::ExampleOnly)
             } else if let Some(file) = matches.get_one::<PathBuf>("file") {
@@ -194,7 +203,7 @@ impl RunSource {
 
                 match example {
                     ExampleSource::ExampleOnly => Ok(SourceReader::Example(reader, None)),
-                    ExampleSource::All => {
+                    ExampleSource::Main => {
                         let file = File::open(&day_info.full)?;
                         let full_reader = Box::new(BufReader::new(file));
                         Ok(SourceReader::Example(reader, Some(full_reader)))
@@ -233,7 +242,7 @@ pub enum RunGiven {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum ExampleSource {
-    All,
+    Main,
     ExampleOnly,
 }
 
@@ -299,14 +308,14 @@ fn should_parse_example() {
 #[test]
 fn should_parse_example_full() {
     // given
-    let input = vec!["app", "-d", "23", "-y", "2020", "-a"];
+    let input = vec!["app", "-d", "23", "-y", "2020", "-m"];
     let expected = RunType::Args(RunArgs {
         day: Day {
             day: 23,
             year: 2020,
         },
         part: PartArgs::Both,
-        source: RunSource::Example(ExampleSource::All),
+        source: RunSource::Example(ExampleSource::Main),
     });
     // when
     let actual = RunType::parse_from(input);

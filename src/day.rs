@@ -1,10 +1,11 @@
+use std::cmp::Ordering;
+use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
 use std::path::PathBuf;
-
-use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 pub trait CombinedSolver: 'static + Sync {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)>;
@@ -37,7 +38,7 @@ impl Answer {
             (Answer::P1(p1), Answer::Both(p2, _)) => p1 == p2,
             (Answer::P2(p1), Answer::Both(_, p2)) => p1 == p2,
             (Answer::P1(_), Answer::P2(_)) => true,
-            _ => other.passed(self)
+            _ => other.passed(self),
         }
     }
 }
@@ -85,9 +86,34 @@ impl Day {
     }
 }
 
+impl PartialOrd<Self> for Day {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Day {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.year.cmp(&other.year)
+            .then(self.day.cmp(&other.day))
+    }
+}
+
 impl Display for Day {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}-{}", self.day, self.year)
+    }
+}
+
+impl FromStr for Day {
+    type Err = ();
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        let (day, year) = s.split_once("-").ok_or(())?;
+        Ok(Self {
+            day: day.parse().map_err(|_| ())?,
+            year: year.parse().map_err(|_| ())?,
+        })
     }
 }
 
@@ -117,7 +143,7 @@ lazy_static! {
         );
         map.insert(
             Day::new(3, 2021),
-            Solver::Separated(Box::new(crate::solver::day_3_21::Day321)),
+            Solver::Combined(Box::new(crate::solver::day_3_21::Day321)),
         );
 
         SolverDatabase { map }

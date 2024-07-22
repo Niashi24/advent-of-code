@@ -1,44 +1,77 @@
-use std::io::BufRead;
-use itertools::Itertools;
 use crate::day::{CombinedSolver, SeparatedSolver};
+use itertools::Itertools;
+use std::io::BufRead;
 
 pub struct Day321;
 
-impl SeparatedSolver for Day321 {
-    fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+// impl SeparatedSolver for Day321 {
+//     fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+//         let lines = parse_lines(input);
+//
+//         let len = lines.first().unwrap().len();
+//
+//         let bits = (0..len)
+//             .rev()
+//             .map(|i| most_common_nth(&lines, i))
+//             .collect_vec();
+//
+//         let gamma = from_bits(bits.iter().copied());
+//         let epsilon = from_bits(bits.iter().copied().map(|x| !x));
+//
+//         Ok((gamma * epsilon).to_string())
+//     }
+//
+//     fn part_2(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+//         let lines = parse_lines(input);
+//
+//         let oxygen = from_bits(process(lines.clone(), false).into_iter().rev());
+//         let co2 = from_bits(process(lines.clone(), true).into_iter().rev());
+//
+//         Ok((oxygen * co2).to_string())
+//     }
+// }
+
+impl CombinedSolver for Day321 {
+    fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let lines = parse_lines(input);
 
-        let len = lines.first().unwrap().len();
+        let p_1 = {
+            let len = lines.first().unwrap().len();
+            let bits = (0..len)
+                .rev()
+                .map(|i| most_common_nth(&lines, i))
+                .collect_vec();
 
-        let bits = (0..len)
-            .rev()
-            .map(|i| most_common_nth(&lines, i))
-            .collect_vec();
+            let gamma = from_bits(bits.iter().copied());
+            let epsilon = from_bits(bits.iter().copied().map(|x| !x));
 
-        let gamma = from_bits(bits.iter().copied());
-        let epsilon = from_bits(bits.iter().copied().map(|x| !x));
+            (gamma * epsilon).to_string()
+        };
 
-        Ok((gamma * epsilon).to_string())
-    }
+        let p_2 = {
+            let oxygen = from_bits(process(lines.clone(), false).into_iter().rev());
+            let co2 = from_bits(process(lines.clone(), true).into_iter().rev());
 
-    fn part_2(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
-        let lines = parse_lines(input);
+            (oxygen * co2).to_string()
+        };
 
-        let oxygen = from_bits(process(lines.clone(), false).into_iter().rev());
-        let co2 = from_bits(process(lines.clone(), true).into_iter().rev());
-
-        Ok((oxygen * co2).to_string())
+        Ok((p_1, p_2))
     }
 }
 
 fn parse_lines(input: Box<dyn BufRead>) -> Vec<Vec<bool>> {
-    input.lines().map(Result::unwrap)
+    input
+        .lines()
+        .map(Result::unwrap)
         .map(|l| l.chars().map(|c| c == '1').collect_vec())
         .collect_vec()
 }
 
-fn from_bits<It: IntoIterator<Item=bool>>(it: It) -> usize {
-    it.into_iter().enumerate().map(|(i, b)| (1 << i) * b as usize).sum()
+fn from_bits<It: IntoIterator<Item = bool>>(it: It) -> usize {
+    it.into_iter()
+        .enumerate()
+        .map(|(i, b)| (1 << i) * b as usize)
+        .sum()
 }
 
 fn process(mut nums: Vec<Vec<bool>>, b: bool) -> Vec<bool> {
@@ -53,9 +86,7 @@ fn process(mut nums: Vec<Vec<bool>>, b: bool) -> Vec<bool> {
 
 // is 1 the most common bit in index i?
 fn most_common_nth(nums: &Vec<Vec<bool>>, i: usize) -> bool {
-    (nums.iter()
-        .filter(|c| c[i])
-        .count()) * 2 >= nums.len()
+    (nums.iter().filter(|c| c[i]).count()) * 2 >= nums.len()
 }
 
 #[test]

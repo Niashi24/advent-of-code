@@ -2,31 +2,32 @@ use std::fmt::{Display, Formatter};
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
-
+use itertools::Itertools;
 use thiserror::Error;
 
 use crate::cli::{ExampleReader, ReadersError, RunArgs, RunType, SourceReader};
-use crate::day::{Answer, Day, DaysMeta, Example, Solver, SolverDatabase};
-use crate::RunError::{ExampleWrongAnswer, NoSolver};
+use crate::day::{Answer, Day, DayInfo, DaysMeta, Example, Solver, SolverDatabase};
 
 pub mod cli;
 pub mod day;
 pub mod solver;
 
 fn main() -> anyhow::Result<()> {
-
     let args = RunType::parse();
     let meta = parse_meta(&Path::new("data/meta.json")).unwrap_or_default();
 
     match args {
         RunType::Interactive => interactive(meta),
+        RunType::All => {
+            run_all(&meta)?;
+        }
         RunType::Args(args) => {
             let result = run_from_args(args, meta);
             match result {
                 Ok(r) => println!("{}", r),
-                Err(e) => println!("Err: {}", e)
+                Err(e) => println!("Err: {}", e),
             }
         }
     }
@@ -43,6 +44,61 @@ fn parse_meta(path: &Path) -> Option<DaysMeta> {
 
 fn interactive(meta: DaysMeta) {
     println!("Ran interactive");
+}
+
+#[derive(Error, Debug)]
+#[error("No solver for {0}")]
+pub struct NoSolver(Day);
+
+fn run_all(meta: &DaysMeta) -> anyhow::Result<Duration> {
+    let mut total = Duration::default();
+
+    let mut days: Vec<(Day, &DayInfo)> =
+    meta.0.iter().map(|(s, i)| {
+        let day = s.parse().unwrap();
+        (day, i)
+    }).collect_vec();
+
+    days.sort_unstable_by_key(|x| x.0);
+
+    for (day, info) in days {
+        let full = File::open(&info.full)?;
+        let full = Box::new(BufReader::new(full));
+
+        let solver = SolverDatabase::default()
+            .get_solver(&day)
+            .ok_or_else(|| NoSolver(day.clone()))?;
+        match solver {
+            Solver::Combined(solver) => {
+                let (r, t) = time_fn(|| solver.solve(full));
+                let (p_1, p_2) = r?;
+                println!("{day}: ({}, {}) in {:.?}", p_1, p_2, t);
+
+                total += t;
+            }
+            Solver::Separated(solver) => {
+                let (r_1, t_1) = time_fn(|| solver.part_1(full));
+                let a_1 = r_1?;
+
+                let full = File::open(&info.full)?;
+                let full = Box::new(BufReader::new(full));
+                let (r_2, t_2) = time_fn(|| solver.part_2(full));
+
+                let a_2 = r_2?;
+
+                println!("{day}: {:.2?}", t_1 + t_2);
+                println!("    {} in {:.2?}", a_1, t_1);
+                println!("    {} in {:.2?}", a_2, t_2);
+
+                total += t_1;
+                total += t_2;
+            }
+        }
+    }
+
+    println!("Finished all in {:.2?}", total);
+
+    Ok(total)
 }
 
 #[derive(Error, Debug)]
@@ -94,7 +150,7 @@ fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
     let RunArgs { day, source, part } = args;
 
     let Some(solver) = SolverDatabase::default().get_solver(&day) else {
-        return Err(NoSolver(day));
+        return Err(RunError::NoSolver(day));
     };
 
     let reader = source.clone().to_readers(&meta, day).map_err(|e| match e {
@@ -154,7 +210,7 @@ fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
                     let (result, time) =
                         time_fn(|| solver.solve(file).map(|(s_1, s_2)| Answer::Both(s_1, s_2)));
 
-                    if result.as_ref().is_ok_and(|a| a.passed(&expected_answer)) {
+                    if result.as_ref().is_ok_and(|a| !a.passed(&expected_answer)) {
                         return Err(RunError::ExampleWrongAnswer {
                             part: Part::Both,
                             expected: expected_answer,
@@ -271,11 +327,11 @@ fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
                         (Ok(a_1), Ok(a_2)) => {
                             let answer = Answer::Both(a_1, a_2);
                             if !answer.passed(&expected_answer) {
-                                return Err(ExampleWrongAnswer {
+                                return Err(RunError::ExampleWrongAnswer {
                                     part: Part::Both,
                                     expected: expected_answer,
                                     actual: answer,
-                                })
+                                });
                             } else if let Some(full) = full {
                                 let (r_1, t_1) = time_fn(|| solver.part_1(full));
 
@@ -292,7 +348,9 @@ fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
                                     },
                                 ));
                             }
-                            let Answer::Both(a_1, a_2) = answer else { unreachable!() };
+                            let Answer::Both(a_1, a_2) = answer else {
+                                unreachable!()
+                            };
                             let r_1 = Ok(a_1);
                             let r_2 = Ok(a_2);
 
@@ -307,20 +365,17 @@ fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
                                 },
                             ))
                         }
-                        (r_1, r_2) => {
-                            Ok(RunResult::Multi(
-                                RunSingleResult {
-                                    result: r_1.map(Answer::P1),
-                                    time: t_1,
-                                },
-                                RunSingleResult {
-                                    result: r_2.map(Answer::P2),
-                                    time: t_2,
-                                },
-                            ))
-                        }
+                        (r_1, r_2) => Ok(RunResult::Multi(
+                            RunSingleResult {
+                                result: r_1.map(Answer::P1),
+                                time: t_1,
+                            },
+                            RunSingleResult {
+                                result: r_2.map(Answer::P2),
+                                time: t_2,
+                            },
+                        )),
                     }
-
                 }
             }
         }
