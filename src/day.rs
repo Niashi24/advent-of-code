@@ -29,12 +29,25 @@ pub enum Answer {
     Both(String, String),
 }
 
+impl Answer {
+    pub fn passed(&self, other: &Answer) -> bool {
+        match (self, other) {
+            (Answer::Both(s_1, s_2), Answer::Both(p_1, p_2)) => s_1 == p_1 && s_2 == p_2,
+            (Answer::P1(p1), Answer::P1(p2)) => p1 == p2,
+            (Answer::P1(p1), Answer::Both(p2, _)) => p1 == p2,
+            (Answer::P2(p1), Answer::Both(_, p2)) => p1 == p2,
+            (Answer::P1(_), Answer::P2(_)) => true,
+            _ => other.passed(self)
+        }
+    }
+}
+
 impl Display for Answer {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            Answer::P1(p1) => write!(f, "({}, _)", p1),
-            Answer::P2(p2) => write!(f, "(_, {})", p2),
-            Answer::Both(p1, p2) => write!(f, "({}, {})", p1, p2),
+            Answer::P1(p1) => write!(f, "P1: {}", p1),
+            Answer::P2(p2) => write!(f, "P2: {}", p2),
+            Answer::Both(p1, p2) => write!(f, "P1: {}, P2: {}", p1, p2),
         }
     }
 }
@@ -95,8 +108,16 @@ lazy_static! {
     static ref DATABASE: SolverDatabase = {
         let mut map = HashMap::new();
         map.insert(
-            Day::new(1, 2022),
-            Solver::Combined(Box::new(crate::solver::day_1_22::Day122)),
+            Day::new(1, 2021),
+            Solver::Separated(Box::new(crate::solver::day_1_21::Day121)),
+        );
+        map.insert(
+            Day::new(2, 2021),
+            Solver::Separated(Box::new(crate::solver::day_2_21::Day221)),
+        );
+        map.insert(
+            Day::new(3, 2021),
+            Solver::Separated(Box::new(crate::solver::day_3_21::Day321)),
         );
 
         SolverDatabase { map }
