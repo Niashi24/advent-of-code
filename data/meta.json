@@ -40,5 +40,16 @@
         }
       }
     }
+  },
+  "4-2021": {
+    "full": "data/full-4-21.txt",
+    "example": {
+      "Single": {
+        "path": "data/ex-4-21.txt",
+        "expected_answer": {
+          "P1": "4512"
+        }
+      }
+    }
   }
 }
