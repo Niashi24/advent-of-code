@@ -2,15 +2,20 @@ use std::collections::HashMap;
 use std::fmt::{Display, Formatter, write};
 use std::io::BufRead;
 use std::path::PathBuf;
-use std::sync::Arc;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
+// Todo: uncombine?
 pub trait Solver: 'static + Sync {
     fn solve(&self, input: Box<dyn BufRead>) -> Result;
 }
 
 pub type Result = anyhow::Result<Answer>;
+
+pub enum DaySolver {
+    Combined(Box<dyn Solver>),
+    Separate(Box<dyn Solver>, Box<dyn Solver>)
+}
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Answer {
@@ -69,7 +74,7 @@ impl DaysMeta {
 }
 
 pub struct SolverDatabase {
-    map: HashMap<Day, Box<dyn Solver>>,
+    map: HashMap<Day, DaySolver>,
 }
 
 lazy_static! {
@@ -87,8 +92,8 @@ impl SolverDatabase {
         &DATABASE
     }
 
-    pub fn get_solver(&self, day: &Day) -> Option<&dyn Solver> {
-        self.map.get(&day).map(|s| s.as_ref())
+    pub fn get_solver(&self, day: &Day) -> Option<&DaySolver> {
+        self.map.get(&day)
     }
 }
 
