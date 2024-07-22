@@ -6,16 +6,21 @@ use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 // Todo: uncombine?
-pub trait Solver: 'static + Sync {
-    fn solve(&self, input: Box<dyn BufRead>) -> Result;
+pub trait CombinedSolver: 'static + Sync {
+    fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)>;
+}
+
+pub trait SeparatedSolver: 'static + Sync {
+    fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String>;
+    fn part_2(&self, input: Box<dyn BufRead>) -> anyhow::Result<String>;
+}
+
+pub enum Solver {
+    Combined(Box<dyn CombinedSolver>),
+    Separated(Box<dyn SeparatedSolver>),
 }
 
 pub type Result = anyhow::Result<Answer>;
-
-pub enum DaySolver {
-    Combined(Box<dyn Solver>),
-    Separate(Box<dyn Solver>, Box<dyn Solver>)
-}
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Answer {
@@ -74,7 +79,7 @@ impl DaysMeta {
 }
 
 pub struct SolverDatabase {
-    map: HashMap<Day, DaySolver>,
+    map: HashMap<Day, Solver>,
 }
 
 lazy_static! {
@@ -92,7 +97,7 @@ impl SolverDatabase {
         &DATABASE
     }
 
-    pub fn get_solver(&self, day: &Day) -> Option<&DaySolver> {
+    pub fn get_solver(&self, day: &Day) -> Option<&Solver> {
         self.map.get(&day)
     }
 }

@@ -8,7 +8,7 @@ use clap::{arg, command, Command, value_parser};
 use rstest::rstest;
 use thiserror::Error;
 use crate::cli::{ExampleReader, ReadersError, RunArgs, RunType, SourceReader};
-use crate::day::{Answer, Day, DayInfo, DaysMeta, DaySolver, Example, SolverDatabase};
+use crate::day::{Answer, Day, DayInfo, DaysMeta, Solver, Example, SolverDatabase};
 use crate::RunError::NoSolver;
 
 mod day;
