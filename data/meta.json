@@ -1,0 +1,14 @@
+[
+  {
+    "full": "data/full-1-21.txt",
+    "example": {
+      "Single": {
+        "path": "data/ex-1-21.txt",
+        "expected_answer": {
+          "part_1": "7",
+          "part_2": null
+        }
+      }
+    }
+  }
+]
