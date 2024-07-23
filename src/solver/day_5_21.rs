@@ -1,9 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::io::BufRead;
-use std::ops::RangeInclusive;
 use std::str::FromStr;
-use glam::{IVec2, Vec2};
+
+use glam::IVec2;
 use itertools::Itertools;
+
 use crate::day::CombinedSolver;
 
 pub struct Day521;

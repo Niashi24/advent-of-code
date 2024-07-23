@@ -1,4 +1,4 @@
-use crate::day::{CombinedSolver, SeparatedSolver};
+use crate::day::{SeparatedSolver};
 use itertools::Itertools;
 use std::io::BufRead;
 

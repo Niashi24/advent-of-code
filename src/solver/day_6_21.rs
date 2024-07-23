@@ -1,5 +1,4 @@
 use std::io::BufRead;
-use itertools::Itertools;
 use memoize::memoize;
 use crate::day::CombinedSolver;
 
@@ -15,12 +14,6 @@ impl CombinedSolver for Day621 {
 
         Ok((p_1.to_string(), p_2.to_string()))
     }
-}
-
-#[inline]
-fn solve(fish: impl Iterator<Item=i32>, days: i32) -> i64 {
-    fish.map(|f| total(f, days))
-        .sum()
 }
 
 #[memoize]

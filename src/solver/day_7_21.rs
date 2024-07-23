@@ -1,6 +1,6 @@
 use std::io::BufRead;
 use itertools::Itertools;
-use crate::day::{CombinedSolver, SeparatedSolver};
+use crate::day::{CombinedSolver};
 
 pub struct Day721;
 
