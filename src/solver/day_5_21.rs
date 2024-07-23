@@ -15,11 +15,11 @@ impl CombinedSolver for Day521 {
             .collect_vec();
         
         let part_1 = solve(lines.iter()
-            .filter_map(|l| l.straight_iter())
-            .flat_map(|it| it));
+            .filter(|l| l.0.x == l.1.x || l.0.y == l.1.y)
+            .flat_map(|l| l.iter()));
         
         let part_2 = solve(lines.iter()
-            .flat_map(|l| l.full_iter()));
+            .flat_map(|l| l.iter()));
         
         Ok((part_1.to_string(), part_2.to_string()))
     }
@@ -42,39 +42,12 @@ fn solve(it: impl Iterator<Item=IVec2>) -> usize {
 
 struct Line(IVec2, IVec2);
 
-impl Line {
-    fn straight_iter(&self) -> Option<Box<dyn Iterator<Item=IVec2>>> {
-        if self.0.x == self.1.x {
-            let range = (self.0.y.min(self.1.y)..=self.0.y.max(self.1.y));
-            let x = self.0.x;
-            Some(Box::new(range.into_iter().map(move |y| IVec2::new(x, y)).into_iter()))
-        } else if self.0.y == self.1.y {
-            let range = (self.0.x.min(self.1.x)..=self.0.x.max(self.1.x));
-            let y = self.0.y;
-            Some(Box::new(range.into_iter().map(move |x| IVec2::new(x, y)).into_iter()))
-        } else {
-            None
-        }
-    }
-    fn full_iter(&self) -> Box<dyn Iterator<Item=IVec2>> {
-        if self.0.x == self.1.x {
-            let range = (self.0.y.min(self.1.y)..=self.0.y.max(self.1.y));
-            let x = self.0.x;
-            Box::new(range.into_iter().map(move |y| IVec2::new(x, y)).into_iter())
-        } else if self.0.y == self.1.y {
-            let range = (self.0.x.min(self.1.x)..=self.0.x.max(self.1.x));
-            let y = self.0.y;
-            Box::new(range.into_iter().map(move |x| IVec2::new(x, y)).into_iter())
-        } else {
-            // Diagonal
-            // let dif = (self.0.x - self.1.x).abs();
-            let dir = (self.1 - self.0).signum();
-            let n = (self.0.x - self.1.x).abs();
-            let start = self.0;
-            Box::new((0..=n).map(move |i| dir * i + start).into_iter())
-            
-            
-        }
+impl Line {    
+    fn iter(&self) -> impl Iterator<Item=IVec2> {
+        let dir = (self.1 - self.0).signum();
+        let n = (self.0.x - self.1.x).abs().max((self.0.y - self.1.y).abs());
+        let start = self.0;
+        (0..=n).map(move |i| dir * i + start).into_iter()
     }
 }
 
