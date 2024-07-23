@@ -2,13 +2,13 @@ use std::fmt::{Display, Formatter};
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::time::{Duration, Instant};
 use itertools::Itertools;
 use thiserror::Error;
 
 use crate::cli::{ExampleReader, ReadersError, RunArgs, RunType, SourceReader};
-use crate::day::{Answer, Day, DayInfo, DaysMeta, Example, Solver, SolverDatabase};
+use crate::day::{Answer, Day, DayInfo, DaysMeta, Solver, SolverDatabase};
 
 pub mod cli;
 pub mod day;
@@ -72,7 +72,9 @@ fn run_all(meta: &DaysMeta) -> anyhow::Result<Duration> {
             Solver::Combined(solver) => {
                 let (r, t) = time_fn(|| solver.solve(full));
                 let (p_1, p_2) = r?;
-                println!("{day}: ({}, {}) in {:.?}", p_1, p_2, t);
+                println!("{day}: {t:.2?}");
+                println!("    {}", p_1);
+                println!("    {}", p_2);
 
                 total += t;
             }
