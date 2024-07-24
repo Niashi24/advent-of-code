@@ -181,6 +181,10 @@ lazy_static! {
             Day::new(12, 2021),
             Solver::Combined(Box::new(crate::solver::day_12_21::Day1221)),
         );
+        map.insert(
+            Day::new(13, 2021),
+            Solver::Combined(Box::new(crate::solver::day_13_21::Day1321)),
+        );
 
         SolverDatabase { map }
     };
