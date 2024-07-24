@@ -90,6 +90,12 @@ impl<T> Grid<T> {
             .collect::<Result<_, _>>()
             .map(Self::new)
     }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = ((usize, usize), &mut T)> {
+        self.grid.iter_mut().enumerate().flat_map(|(y, row)| {
+            row.iter_mut().enumerate().map(move |(x, elem)| ((x, y), elem))
+        })
+    }
 }
 
 pub struct GridIter<'a, T> {
