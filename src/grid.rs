@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -113,6 +114,55 @@ impl<'a, T> Iterator for GridIter<'a, T> {
     }
 }
 
+pub struct GridIntoIter<T> {
+    grid: VecDeque<VecDeque<T>>,
+    x: usize,
+    y: usize,
+}
+
+impl<T> Iterator for GridIntoIter<T> {
+    type Item = ((usize, usize), T);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.grid.is_empty() {
+            return None;
+        }
+
+        if self.y >= self.grid.len() {
+            return None;
+        }
+
+        if self.grid[self.y].is_empty() {
+            return None;
+        }
+
+        let item = self.grid[self.y].pop_front().map(|value| ((self.x, self.y), value));
+
+        self.x += 1;
+        if self.grid[self.y].is_empty() {
+            self.x = 0;
+            self.y += 1;
+        }
+
+        item
+    }
+}
+
+impl<T> IntoIterator for Grid<T> {
+    type Item = ((usize, usize), T);
+    type IntoIter = GridIntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        Self::IntoIter {
+            grid: self.grid.into_iter()
+                .map(|row| VecDeque::from(row))
+                .collect(),
+            x: 0,
+            y: 0,
+        }
+    }
+}
+
 impl<T, IT> FromIterator<IT> for Grid<T>
 where
     IT: IntoIterator<Item = T>,
@@ -133,4 +183,18 @@ impl<T: Display> Display for Grid<T> {
 
         Ok(())
     }
+}
+
+#[test]
+fn test_iterator() {
+    let mut grid = Grid::new(vec![vec![1, 2, 3], vec![4, 5, 6]]).into_iter();
+
+    assert_eq!(grid.next(), Some(((0, 0), 1)));
+    assert_eq!(grid.next(), Some(((1, 0), 2)));
+    assert_eq!(grid.next(), Some(((2, 0), 3)));
+    assert_eq!(grid.next(), Some(((0, 1), 4)));
+    assert_eq!(grid.next(), Some(((1, 1), 5)));
+    assert_eq!(grid.next(), Some(((2, 1), 6)));
+    assert_eq!(grid.next(), None);
+    assert_eq!(grid.next(), None);
 }
