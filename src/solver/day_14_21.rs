@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 use std::io::BufRead;
+use std::rc::Rc;
 use itertools::Itertools;
 use crate::day::CombinedSolver;
 
@@ -29,40 +30,6 @@ impl CombinedSolver for Day1421 {
     }
 }
 
-fn step(s: Vec<u8>, rules: &[Rule]) -> Vec<u8> {
-    let mut insertions = BTreeMap::new();
-
-    rules.iter().flat_map(|r| r.matches_all(&s))
-        .for_each(|(c, i)| { insertions.insert(i, c); });
-
-    // println!("{:?}", insertions);
-
-    if insertions.is_empty() {
-        return s;
-    }
-
-    let mut chars = s.iter().copied();
-    let mut s = Vec::new();
-    let mut insertions = insertions.into_iter();
-
-    let (mut i, c) = insertions.next().unwrap();
-    for _ in 0..i {
-        s.push(chars.next().unwrap());
-    }
-    s.push(c);
-
-    for (j, c) in insertions {
-        for _ in 0..(j - i) {
-            s.push(chars.next().unwrap());
-        }
-        s.push(c);
-        i = j;
-    }
-    s.extend(chars);
-
-    s
-}
-
 pub type Counts = BTreeMap<u8, usize>;
 
 fn solve(initial: &[u8], rules: &[Rule], t: u8, memo: &mut Memo) -> usize {
@@ -70,7 +37,7 @@ fn solve(initial: &[u8], rules: &[Rule], t: u8, memo: &mut Memo) -> usize {
     for pair in initial.iter().copied().tuple_windows::<(_, _)>() {
         if let Some(rule) = rules.iter().find(|r| r.matches(pair)) {
             let c = score(pair.0, pair.1, rule.out, t, rules, memo);
-            add_all(&mut counts, c);
+            add_all(&mut counts, &c);
         }
     }
     
@@ -79,15 +46,15 @@ fn solve(initial: &[u8], rules: &[Rule], t: u8, memo: &mut Memo) -> usize {
     max - min
 }
 
-type Memo = HashMap<(u8, u8, u8, u8), Counts>;
+type Memo = HashMap<(u8, u8, u8, u8), Rc<Counts>>;
 
-fn add_all(a: &mut Counts, b: Counts) {
+fn add_all(a: &mut Counts, b: &Counts) {
     for (i, n) in b {
-        *a.entry(i).or_default() += n;
+        *a.entry(*i).or_default() += n;
     }
 }
 
-fn score(a: u8, b: u8, i: u8, t: u8, rules: &[Rule], memo: &mut Memo) -> Counts {
+fn score(a: u8, b: u8, i: u8, t: u8, rules: &[Rule], memo: &mut Memo) -> Rc<Counts> {
 
     if let Some(counts) = memo.get(&(a, b, i, t)) {
         return counts.clone();
@@ -95,19 +62,20 @@ fn score(a: u8, b: u8, i: u8, t: u8, rules: &[Rule], memo: &mut Memo) -> Counts 
     
     let mut counts = Counts::from([(i, 1)]);
     if t == 1 {
-        return counts;
+        return Rc::new(counts);
     }
     
     rules.iter()
         .filter(|r| r.matches((a, i)))
         .map(|r| score(a, i, r.out, t - 1, rules, memo))
-        .for_each(|c| add_all(&mut counts, c));
+        .for_each(|c| add_all(&mut counts, &c));
 
     rules.iter()
         .filter(|r| r.matches((i, b)))
         .map(|r| score(i, b, r.out, t - 1, rules, memo))
-        .for_each(|c| add_all(&mut counts, c));
-    
+        .for_each(|c| add_all(&mut counts, &c));
+
+    let counts = Rc::new(counts);
     memo.insert((a, b, i, t), counts.clone());
     
     counts
@@ -122,14 +90,6 @@ struct Rule {
 impl Rule {
     fn matches(&self, p: (u8, u8)) -> bool {
         self.pair == p
-    }
-    
-    fn matches_all(&self, polymer: &[u8]) -> Vec<(u8, usize)> {
-        polymer.iter().copied().tuple_windows::<(_,_)>()
-            .enumerate()
-            .filter(|&(_, p)| p == self.pair)
-            .map(|(i, _)| (self.out, i + 1))
-            .collect()
     }
 }
 
