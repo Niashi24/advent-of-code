@@ -1,5 +1,4 @@
-use std::cmp::Ordering;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::io::BufRead;
 use itertools::Itertools;
 use crate::day::CombinedSolver;
@@ -9,42 +8,31 @@ pub struct Day1421;
 impl CombinedSolver for Day1421 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut lines = input.lines().map(Result::unwrap);
-        let template = lines.next().unwrap();
+        let template: Vec<u8> = lines.next().unwrap().chars().map(|c| c.try_into().unwrap()).collect();
         lines.next();
 
         let rules = lines.map(|l| {
-            let out = l.chars().rev().next().unwrap();
-            let pair = l.chars().next_tuple().unwrap();
+            let out = l.chars().rev().next().unwrap().try_into().unwrap();
+            let pair = l.chars().map(|c| c.try_into().unwrap()).next_tuple().unwrap();
             Rule {
                 pair,
                 out,
             }
         }).collect_vec();
+        
+        let mut memo = Memo::new();
+        
+        let part_1 = solve(&template, &rules, 10, &mut memo);
+        let part_2 = solve(&template, &rules, 40, &mut memo);
 
-        let mut part_1_polymer = template.clone();
-        for i in 0..20 {
-            part_1_polymer = step(part_1_polymer, &rules);
-            let mut counts = part_1_polymer.chars().counts().into_iter()
-                .sorted_by_key(|a| a.1);
-            let least = counts.next().unwrap().1;
-            let most = counts.last().unwrap().1;
-            println!("{i} {least} {most}");
-        }
-
-        let mut counts = part_1_polymer.chars().counts().into_iter()
-            .sorted_by_key(|a| a.1);
-        let least = counts.next().unwrap().1;
-        let most = counts.last().unwrap().1;
-        let part_1 = most - least;
-
-        Ok((part_1.to_string(), Default::default()))
+        Ok((part_1.to_string(), part_2.to_string()))
     }
 }
 
-fn step(s: String, rules: &[Rule]) -> String {
+fn step(s: Vec<u8>, rules: &[Rule]) -> Vec<u8> {
     let mut insertions = BTreeMap::new();
 
-    rules.iter().flat_map(|r| r.matches(&s))
+    rules.iter().flat_map(|r| r.matches_all(&s))
         .for_each(|(c, i)| { insertions.insert(i, c); });
 
     // println!("{:?}", insertions);
@@ -53,10 +41,11 @@ fn step(s: String, rules: &[Rule]) -> String {
         return s;
     }
 
-    let mut chars = s.chars();
-    let mut s = String::new();
+    let mut chars = s.iter().copied();
+    let mut s = Vec::new();
+    let mut insertions = insertions.into_iter();
 
-    let (mut i, c) = insertions.pop_first().unwrap();
+    let (mut i, c) = insertions.next().unwrap();
     for _ in 0..i {
         s.push(chars.next().unwrap());
     }
@@ -74,14 +63,69 @@ fn step(s: String, rules: &[Rule]) -> String {
     s
 }
 
+pub type Counts = BTreeMap<u8, usize>;
+
+fn solve(initial: &[u8], rules: &[Rule], t: u8, memo: &mut Memo) -> usize {
+    let mut counts = initial.iter().copied().counts().into_iter().collect();
+    for pair in initial.iter().copied().tuple_windows::<(_, _)>() {
+        if let Some(rule) = rules.iter().find(|r| r.matches(pair)) {
+            let c = score(pair.0, pair.1, rule.out, t, rules, memo);
+            add_all(&mut counts, c);
+        }
+    }
+    
+    let (min, max) = counts.into_iter().map(|(_, n)| n).minmax().into_option().unwrap();
+    
+    max - min
+}
+
+type Memo = HashMap<(u8, u8, u8, u8), Counts>;
+
+fn add_all(a: &mut Counts, b: Counts) {
+    for (i, n) in b {
+        *a.entry(i).or_default() += n;
+    }
+}
+
+fn score(a: u8, b: u8, i: u8, t: u8, rules: &[Rule], memo: &mut Memo) -> Counts {
+
+    if let Some(counts) = memo.get(&(a, b, i, t)) {
+        return counts.clone();
+    }
+    
+    let mut counts = Counts::from([(i, 1)]);
+    if t == 1 {
+        return counts;
+    }
+    
+    rules.iter()
+        .filter(|r| r.matches((a, i)))
+        .map(|r| score(a, i, r.out, t - 1, rules, memo))
+        .for_each(|c| add_all(&mut counts, c));
+
+    rules.iter()
+        .filter(|r| r.matches((i, b)))
+        .map(|r| score(i, b, r.out, t - 1, rules, memo))
+        .for_each(|c| add_all(&mut counts, c));
+    
+    memo.insert((a, b, i, t), counts.clone());
+    
+    counts
+}
+
+#[derive(Debug, Copy, Clone)]
 struct Rule {
-    pair: (char, char),
-    out: char,
+    pair: (u8, u8),
+    out: u8,
 }
 
 impl Rule {
-    fn matches(&self, polymer: &str) -> Vec<(char, usize)> {
-        polymer.chars().tuple_windows::<(_,_)>()
+    fn matches(&self, p: (u8, u8)) -> bool {
+        self.pair == p
+    }
+    
+    fn matches_all(&self, polymer: &[u8]) -> Vec<(u8, usize)> {
+        polymer.iter().copied().tuple_windows::<(_,_)>()
             .enumerate()
             .filter(|&(_, p)| p == self.pair)
             .map(|(i, _)| (self.out, i + 1))
