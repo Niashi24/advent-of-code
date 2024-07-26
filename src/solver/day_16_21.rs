@@ -117,8 +117,7 @@ impl<IT: Iterator<Item=bool>> BitParser<IT> {
             }
             PacketType::Literal(value)
         } else {  // operator
-            let lt_id = self.next_bit();
-            let packets = if lt_id {  // num packets
+            let packets = if self.next_bit() {  // num packets
                 let num_sub_packets: u16 = self.next_n(11);
                 (0..num_sub_packets)
                     .map(|_| self.read_next())
