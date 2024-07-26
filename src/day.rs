@@ -195,7 +195,7 @@ lazy_static! {
         );
         map.insert(
             Day::new(16, 2021),
-            Solver::Separated(Box::new(crate::solver::day_16_21::Day1621)),
+            Solver::Combined(Box::new(crate::solver::day_16_21::Day1621)),
         );
 
         SolverDatabase { map }

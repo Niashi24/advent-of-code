@@ -21,6 +21,8 @@ enumset = "1.1.5"
 pathfinding = "4.10.0"
 indexmap = "2.2.6"
 compact_str = "0.8.0"
+num = "0.4.3"
+bitvec = "1.0.1"
 
 [profile.profiling]
 inherits = "release"
