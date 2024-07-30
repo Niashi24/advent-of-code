@@ -40,7 +40,7 @@ impl CombinedSolver for Day1321 {
             fold.fold(&mut paper);
         }
 
-        let mut part_2 = to_dot_paper(&paper);
+        let part_2 = to_dot_paper(&paper);
 
         Ok((part_1.to_string(), part_2))
     }

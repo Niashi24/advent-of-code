@@ -1,6 +1,8 @@
-use std::io::{BufRead, Read};
-use std::ops::{Range, RangeInclusive};
+use std::io::BufRead;
+use std::ops::RangeInclusive;
+
 use itertools::Itertools;
+
 use crate::day::SeparatedSolver;
 
 pub struct Day1721;

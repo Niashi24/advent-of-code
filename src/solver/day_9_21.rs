@@ -1,10 +1,11 @@
 use std::collections::BinaryHeap;
 use std::io::BufRead;
+
 use indexmap::IndexSet;
 use itertools::Itertools;
-use pathfinding::num_traits::CheckedSub;
 use pathfinding::prelude::bfs_reach;
 use smallvec::SmallVec;
+
 use crate::day::CombinedSolver;
 use crate::grid::Grid;
 

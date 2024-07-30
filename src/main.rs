@@ -5,7 +5,6 @@ use std::io::BufReader;
 use std::path::Path;
 use std::time::{Duration, Instant};
 use itertools::Itertools;
-use jiter::JsonValue;
 use thiserror::Error;
 
 use crate::cli::{ExampleReader, ReadersError, RunArgs, RunType, SourceReader};
