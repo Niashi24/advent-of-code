@@ -4,7 +4,9 @@ use std::io;
 use std::io::BufReader;
 use std::path::Path;
 use std::time::{Duration, Instant};
+use glam::{Mat3, Quat};
 use itertools::Itertools;
+use nalgebra::{Matrix3, Quaternion};
 use thiserror::Error;
 
 use crate::cli::{ExampleReader, ReadersError, RunArgs, RunType, SourceReader};
@@ -15,7 +17,42 @@ pub mod day;
 pub mod solver;
 pub mod grid;
 
+fn rotations() -> Vec<Quat> {
+    let mut all_rotations = Vec::new();
+
+    for perm in (0..3).permutations(3) {
+        let x = perm[0];
+        let y = perm[1];
+        let z = perm[2];
+
+        for signs in (-1..=1).step_by(2).cartesian_product((-1..=1).step_by(2)).cartesian_product((-1..=1).step_by(2)) {
+            let sx = signs.0 .0;
+            let sy = signs.0 .1;
+            let sz = signs.1;
+
+            let mut rotation_matrix = Mat3::ZERO;
+            rotation_matrix.col_mut(0)[x] = sx as f32;
+            rotation_matrix.col_mut(1)[y] = sy as f32;
+            rotation_matrix.col_mut(2)[z] = sz as f32;
+
+            if rotation_matrix.determinant() == 1.0 {
+                let quat = Quat::from_mat3(&rotation_matrix);
+                all_rotations.push(quat);
+            }
+        }
+    }
+
+    all_rotations
+}
+
 fn main() -> anyhow::Result<()> {
+    // let all_rotations = rotations();
+    // println!("Number of rotations: {}", all_rotations.len());
+    //
+    // for quat in &all_rotations {
+    //     println!("Quat::from_array({:?}),", quat.to_array());
+    // }
+    // return Ok(());
     let args = RunType::parse();
     let meta = parse_meta(&Path::new("data/meta.json")).unwrap_or_default();
 

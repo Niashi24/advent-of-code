@@ -250,5 +250,16 @@
         }
       }
     }
+  },
+  "19-2021": {
+    "full": "data/full-19-21.txt",
+    "example": {
+      "Single": {
+        "path": "data/ex-19-21.txt",
+        "expected_answer": {
+          "P1": "79"
+        }
+      }
+    }
   }
 }
