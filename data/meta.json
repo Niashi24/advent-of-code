@@ -275,5 +275,19 @@
         }
       }
     }
+  },
+  "21-2021": {
+    "full": "data/2021/full-21-21.txt",
+    "example": {
+      "Single": {
+        "path": "data/2021/ex-21-21.txt",
+        "expected_answer": {
+          "Both": [
+            "739785",
+            "444356092776315"
+          ]
+        }
+      }
+    }
   }
 }
