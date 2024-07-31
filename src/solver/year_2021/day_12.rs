@@ -6,24 +6,21 @@ use smallvec::SmallVec;
 
 use crate::day::CombinedSolver;
 
-pub struct Day1221;
+pub struct Day12;
 
-impl CombinedSolver for Day1221 {
+impl CombinedSolver for Day12 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut graph = Graph::new();
 
-        for (a, b) in input.lines().map(Result::unwrap)
-            .map(|s| {
-                let (a, b) = s.split_once("-").unwrap();
-                (Node::from(a), Node::from(b))
-            }) {
-
-            graph.entry(a.clone())
-                .or_insert(SmallVec::new())
+        for (a, b) in input.lines().map(Result::unwrap).map(|s| {
+            let (a, b) = s.split_once("-").unwrap();
+            (Node::from(a), Node::from(b))
+        }) {
+            graph
+                .entry(a.clone())
+                .or_default()
                 .push(b.clone());
-            graph.entry(b)
-                .or_insert(SmallVec::new())
-                .push(a);
+            graph.entry(b).or_default().push(a);
         }
 
         let part_1 = score_1(State::start(), &graph);
@@ -57,23 +54,24 @@ fn score_1(state: State, graph: &Graph) -> usize {
         return 1;
     }
 
-    successors_1(&state, graph).into_iter()
+    successors_1(&state, graph)
+        .into_iter()
         .map(|s| score_1(s, graph))
         .sum()
 }
 
 fn can_move_to_1(n: &Node, visited: &HashSet<Node>) -> bool {
-    n.chars().all(|x| x.is_uppercase()) ||
-        !visited.contains(n)
+    n.chars().all(|x| x.is_uppercase()) || !visited.contains(n)
 }
 
 fn can_move_to_2(n: &Node, visited: &BTreeSet<Node>) -> bool {
-    n.chars().all(|x| x.is_uppercase()) ||
-        !visited.contains(n)
+    n.chars().all(|x| x.is_uppercase()) || !visited.contains(n)
 }
 
 fn successors_1(state: &State, graph: &Graph) -> SmallVec<[State; 6]> {
-    graph.get(&state.current).unwrap()
+    graph
+        .get(&state.current)
+        .unwrap()
         .iter()
         .filter(|n| can_move_to_1(n, &state.little_visited))
         .cloned()
@@ -114,7 +112,8 @@ fn score_2(state: State2, graph: &Graph, memo: &mut HashMap<State2, usize>) -> u
         return 1;
     }
 
-    let n = successors_2(&state, graph).into_iter()
+    let n = successors_2(&state, graph)
+        .into_iter()
         .map(|s| score_2(s, graph, memo))
         .sum();
 
@@ -123,12 +122,13 @@ fn score_2(state: State2, graph: &Graph, memo: &mut HashMap<State2, usize>) -> u
     n
 }
 
-
 fn successors_2(state: &State2, graph: &Graph) -> SmallVec<[State2; 6]> {
     let mut visited = state.visited.clone();
     visited.insert(state.current.clone());
 
-    graph.get(&state.current).unwrap()
+    graph
+        .get(&state.current)
+        .unwrap()
         .iter()
         .filter(|n| n.as_str() != "start")
         .filter_map(|n| {

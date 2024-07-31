@@ -1,15 +1,17 @@
-use std::fmt::{Display, Formatter};
-use std::io::BufRead;
+use crate::day::CombinedSolver;
 use colored::Colorize;
 use itertools::Itertools;
-use crate::day::CombinedSolver;
+use std::fmt::{Display, Formatter};
+use std::io::BufRead;
 
-pub struct Day421;
+pub struct Day4;
 
-impl CombinedSolver for Day421 {
+impl CombinedSolver for Day4 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut lines = input.lines().map(Result::unwrap);
-        let numbers = lines.next().unwrap()
+        let numbers = lines
+            .next()
+            .unwrap()
             .split(",")
             .map(|n| n.parse::<i32>().unwrap())
             .collect_vec();
@@ -18,27 +20,26 @@ impl CombinedSolver for Day421 {
 
         let mut boards = Vec::new();
         while let Some((a, b, c, d, e)) = lines.next_tuple() {
-            boards.push(Board::from_arr([a, b, c, d, e]
-                .map(|s| s.split_whitespace()
+            boards.push(Board::from_arr([a, b, c, d, e].map(|s| {
+                s.split_whitespace()
                     .map(|n| n.parse::<i32>().unwrap())
                     .collect_vec()
-                    .try_into().unwrap())));
-            
+                    .try_into()
+                    .unwrap()
+            })));
+
             lines.next();
         }
-        
-        
 
         let part_1 = part_1(numbers.as_slice(), boards.clone());
         let part_2 = part_2(numbers.as_slice(), boards.clone());
-        
+
         Ok((part_1.to_string(), part_2.to_string()))
     }
 }
 
 fn part_1(numbers: &[i32], mut boards: Vec<Board>) -> i32 {
     for &num in numbers {
-        
         let mut completed = None;
         for board in boards.iter_mut() {
             if board.mark(num) {
@@ -51,11 +52,11 @@ fn part_1(numbers: &[i32], mut boards: Vec<Board>) -> i32 {
             return num * score;
         }
     }
-    
+
     unreachable!()
 }
 
-fn part_2(numbers: &[i32], mut boards: Vec<Board>) -> i32 {    
+fn part_2(numbers: &[i32], mut boards: Vec<Board>) -> i32 {
     for &num in numbers {
         if boards.len() > 1 {
             boards.retain_mut(|b| !b.mark(num));
@@ -74,29 +75,36 @@ pub struct Board {
 impl Board {
     pub fn from_arr(board: [[i32; 5]; 5]) -> Self {
         Self {
-            board: board.map(|i| i.map(|n| Tile::new(n)))
+            board: board.map(|i| i.map(Tile::new)),
         }
     }
 
     pub fn from_vec(board: Vec<Vec<i32>>) -> Self {
-        let board = board.into_iter()
-            .map(|row| row.into_iter()
-                .map(Tile::new)
-                .collect_vec()
-                .try_into().unwrap())
+        let board = board
+            .into_iter()
+            .map(|row| {
+                row.into_iter()
+                    .map(Tile::new)
+                    .collect_vec()
+                    .try_into()
+                    .unwrap()
+            })
             .collect_vec()
-            .try_into().unwrap();
+            .try_into()
+            .unwrap();
 
-        Self {
-            board
-        }
+        Self { board }
     }
 
     pub fn try_get_pos(&self, num: i32) -> Option<(usize, usize)> {
-        self.board.iter().enumerate()
-            .flat_map(move |(y, row)| row.iter()
-                .enumerate()
-                .flat_map(move |(x, t)| (t.0 == num).then_some((x, y))))
+        self.board
+            .iter()
+            .enumerate()
+            .flat_map(move |(y, row)| {
+                row.iter()
+                    .enumerate()
+                    .flat_map(move |(x, t)| (t.0 == num).then_some((x, y)))
+            })
             .next()
     }
 
@@ -116,9 +124,10 @@ impl Board {
         // Assume that we haven't already gotten bingo
         false
     }
-    
+
     pub fn score(&self) -> i32 {
-        self.board.iter()
+        self.board
+            .iter()
             .flat_map(|r| r.iter())
             .flat_map(|t| (!t.1).then_some(t.0))
             .sum()
@@ -148,10 +157,14 @@ impl Tile {
 
 impl Display for Tile {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:2}", if self.1 {
-            self.0.to_string().red()
-        } else {
-            self.0.to_string().blue()
-        }) 
+        write!(
+            f,
+            "{:2}",
+            if self.1 {
+                self.0.to_string().red()
+            } else {
+                self.0.to_string().blue()
+            }
+        )
     }
 }

@@ -1,12 +1,16 @@
-use std::io::BufRead;
-use memoize::memoize;
 use crate::day::CombinedSolver;
+use memoize::memoize;
+use std::io::BufRead;
 
-pub struct Day621;
+pub struct Day6;
 
-impl CombinedSolver for Day621 {
+impl CombinedSolver for Day6 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
-        let (p_1, p_2) = input.lines().next().unwrap().unwrap()
+        let (p_1, p_2) = input
+            .lines()
+            .next()
+            .unwrap()
+            .unwrap()
             .split(",")
             .map(|i| i.parse::<i32>().unwrap())
             .map(|n| (total(n, 80), total(n, 256)))

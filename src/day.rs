@@ -1,6 +1,7 @@
-use std::cmp::Ordering;
+use crate::solver::year_2021::add_all;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
@@ -94,8 +95,7 @@ impl PartialOrd<Self> for Day {
 
 impl Ord for Day {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.year.cmp(&other.year)
-            .then(self.day.cmp(&other.day))
+        self.year.cmp(&other.year).then(self.day.cmp(&other.day))
     }
 }
 
@@ -132,95 +132,26 @@ pub struct SolverDatabase {
 
 lazy_static! {
     static ref DATABASE: SolverDatabase = {
-        let mut map = HashMap::new();
-        map.insert(
-            Day::new(1, 2021),
-            Solver::Separated(Box::new(crate::solver::day_1_21::Day121)),
-        );
-        map.insert(
-            Day::new(2, 2021),
-            Solver::Separated(Box::new(crate::solver::day_2_21::Day221)),
-        );
-        map.insert(
-            Day::new(3, 2021),
-            Solver::Combined(Box::new(crate::solver::day_3_21::Day321)),
-        );
-        map.insert(
-            Day::new(4, 2021),
-            Solver::Combined(Box::new(crate::solver::day_4_21::Day421)),
-        );
-        map.insert(
-            Day::new(5, 2021),
-            Solver::Combined(Box::new(crate::solver::day_5_21::Day521)),
-        );
-        map.insert(
-            Day::new(6, 2021),
-            Solver::Combined(Box::new(crate::solver::day_6_21::Day621)),
-        );
-        map.insert(
-            Day::new(7, 2021),
-            Solver::Combined(Box::new(crate::solver::day_7_21::Day721)),
-        );
-        map.insert(
-            Day::new(8, 2021),
-            Solver::Separated(Box::new(crate::solver::day_8_21::Day821)),
-        );
-        map.insert(
-            Day::new(9, 2021),
-            Solver::Combined(Box::new(crate::solver::day_9_21::Day921)),
-        );
-        map.insert(
-            Day::new(10, 2021),
-            Solver::Separated(Box::new(crate::solver::day_10_21::Day1021)),
-        );
-        map.insert(
-            Day::new(11, 2021),
-            Solver::Separated(Box::new(crate::solver::day_11_21::Day1121)),
-        );
-        map.insert(
-            Day::new(12, 2021),
-            Solver::Combined(Box::new(crate::solver::day_12_21::Day1221)),
-        );
-        map.insert(
-            Day::new(13, 2021),
-            Solver::Combined(Box::new(crate::solver::day_13_21::Day1321)),
-        );
-        map.insert(
-            Day::new(14, 2021),
-            Solver::Combined(Box::new(crate::solver::day_14_21::Day1421)),
-        );
-        map.insert(
-            Day::new(15, 2021),
-            Solver::Combined(Box::new(crate::solver::day_15_21::Day1521)),
-        );
-        map.insert(
-            Day::new(16, 2021),
-            Solver::Combined(Box::new(crate::solver::day_16_21::Day1621)),
-        );
-        map.insert(
-            Day::new(17, 2021),
-            Solver::Separated(Box::new(crate::solver::day_17_21::Day1721)),
-        );
-        map.insert(
-            Day::new(18, 2021),
-            Solver::Separated(Box::new(crate::solver::day_18_21::Day1821)),
-        );
-        map.insert(
-            Day::new(19, 2021),
-            Solver::Combined(Box::new(crate::solver::day_19_21::Day1921)),
-        );
+        let mut out = SolverDatabase {
+            map: HashMap::new(),
+        };
+        add_all(&mut out);
 
-        SolverDatabase { map }
+        out
     };
 }
 
 impl SolverDatabase {
-    pub fn default() -> &'static Self {
+    pub fn global() -> &'static Self {
         &DATABASE
     }
 
+    pub fn add_solver(&mut self, day: Day, solver: Solver) {
+        self.map.insert(day, solver);
+    }
+
     pub fn get_solver(&self, day: &Day) -> Option<&Solver> {
-        self.map.get(&day)
+        self.map.get(day)
     }
 }
 

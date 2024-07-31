@@ -1,13 +1,14 @@
-use std::io::BufRead;
+use crate::day::CombinedSolver;
 use itertools::Itertools;
-use crate::day::{CombinedSolver};
+use std::io::BufRead;
 
-pub struct Day721;
+pub struct Day7;
 
-impl CombinedSolver for Day721 {
+impl CombinedSolver for Day7 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let line = input.lines().next().unwrap()?;
-        let crabs = line.split(",")
+        let crabs = line
+            .split(",")
             .map(|s| s.parse::<i32>().unwrap())
             .collect_vec();
 
@@ -15,7 +16,8 @@ impl CombinedSolver for Day721 {
             let max = crabs.iter().copied().max().unwrap();
             (0..=max)
                 .map(|p| crabs.iter().map(|c| cost(p, *c)).sum())
-                .min().unwrap()
+                .min()
+                .unwrap()
         }
 
         #[inline]

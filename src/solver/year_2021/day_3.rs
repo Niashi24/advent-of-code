@@ -1,8 +1,8 @@
-use crate::day::{CombinedSolver};
+use crate::day::CombinedSolver;
 use itertools::Itertools;
 use std::io::BufRead;
 
-pub struct Day321;
+pub struct Day3;
 
 // impl SeparatedSolver for Day321 {
 //     fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
@@ -31,7 +31,7 @@ pub struct Day321;
 //     }
 // }
 
-impl CombinedSolver for Day321 {
+impl CombinedSolver for Day3 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let lines = parse_lines(input);
 
@@ -85,7 +85,7 @@ fn process(mut nums: Vec<Vec<bool>>, b: bool) -> Vec<bool> {
 }
 
 // is 1 the most common bit in index i?
-fn most_common_nth(nums: &Vec<Vec<bool>>, i: usize) -> bool {
+fn most_common_nth(nums: &[Vec<bool>], i: usize) -> bool {
     (nums.iter().filter(|c| c[i]).count()) * 2 >= nums.len()
 }
 

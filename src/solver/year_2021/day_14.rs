@@ -1,28 +1,36 @@
+use crate::day::CombinedSolver;
+use itertools::Itertools;
 use std::collections::{BTreeMap, HashMap};
 use std::io::BufRead;
 use std::rc::Rc;
-use itertools::Itertools;
-use crate::day::CombinedSolver;
 
-pub struct Day1421;
+pub struct Day14;
 
-impl CombinedSolver for Day1421 {
+impl CombinedSolver for Day14 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut lines = input.lines().map(Result::unwrap);
-        let template: Vec<u8> = lines.next().unwrap().chars().map(|c| c.try_into().unwrap()).collect();
+        let template: Vec<u8> = lines
+            .next()
+            .unwrap()
+            .chars()
+            .map(|c| c.try_into().unwrap())
+            .collect();
         lines.next();
 
-        let rules = lines.map(|l| {
-            let out = l.chars().rev().next().unwrap().try_into().unwrap();
-            let pair = l.chars().map(|c| c.try_into().unwrap()).next_tuple().unwrap();
-            Rule {
-                pair,
-                out,
-            }
-        }).collect_vec();
-        
+        let rules = lines
+            .map(|l| {
+                let out = l.chars().next_back().unwrap().try_into().unwrap();
+                let pair = l
+                    .chars()
+                    .map(|c| c.try_into().unwrap())
+                    .next_tuple()
+                    .unwrap();
+                Rule { pair, out }
+            })
+            .collect_vec();
+
         let mut memo = Memo::new();
-        
+
         let part_1 = solve(&template, &rules, 10, &mut memo);
         let part_2 = solve(&template, &rules, 40, &mut memo);
 
@@ -40,9 +48,12 @@ fn solve(initial: &[u8], rules: &[Rule], t: u8, memo: &mut Memo) -> usize {
             add_all(&mut counts, &c);
         }
     }
-    
-    let (min, max) = counts.into_iter().map(|(_, n)| n).minmax().into_option().unwrap();
-    
+
+    let (min, max) = counts.into_values()
+        .minmax()
+        .into_option()
+        .unwrap();
+
     max - min
 }
 
@@ -55,29 +66,30 @@ fn add_all(a: &mut Counts, b: &Counts) {
 }
 
 fn score(a: u8, b: u8, i: u8, t: u8, rules: &[Rule], memo: &mut Memo) -> Rc<Counts> {
-
     if let Some(counts) = memo.get(&(a, b, i, t)) {
         return counts.clone();
     }
-    
+
     let mut counts = Counts::from([(i, 1)]);
     if t == 1 {
         return Rc::new(counts);
     }
-    
-    rules.iter()
+
+    rules
+        .iter()
         .filter(|r| r.matches((a, i)))
         .map(|r| score(a, i, r.out, t - 1, rules, memo))
         .for_each(|c| add_all(&mut counts, &c));
 
-    rules.iter()
+    rules
+        .iter()
         .filter(|r| r.matches((i, b)))
         .map(|r| score(i, b, r.out, t - 1, rules, memo))
         .for_each(|c| add_all(&mut counts, &c));
 
     let counts = Rc::new(counts);
     memo.insert((a, b, i, t), counts.clone());
-    
+
     counts
 }
 
@@ -92,5 +104,3 @@ impl Rule {
         self.pair == p
     }
 }
-
-

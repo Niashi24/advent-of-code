@@ -7,48 +7,51 @@ use itertools::Itertools;
 
 use crate::day::CombinedSolver;
 
-pub struct Day521;
+pub struct Day5;
 
-impl CombinedSolver for Day521 {
+impl CombinedSolver for Day5 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
-        let lines = input.lines().map(Result::unwrap)
+        let lines = input
+            .lines()
+            .map(Result::unwrap)
             .map(|l| l.parse::<Line>().unwrap())
             .collect_vec();
-        
-        let part_1 = solve(lines.iter()
-            .filter(|l| l.0.x == l.1.x || l.0.y == l.1.y)
-            .flat_map(|l| l.iter()));
-        
-        let part_2 = solve(lines.iter()
-            .flat_map(|l| l.iter()));
-        
+
+        let part_1 = solve(
+            lines
+                .iter()
+                .filter(|l| l.0.x == l.1.x || l.0.y == l.1.y)
+                .flat_map(|l| l.iter()),
+        );
+
+        let part_2 = solve(lines.iter().flat_map(|l| l.iter()));
+
         Ok((part_1.to_string(), part_2.to_string()))
     }
 }
 
-fn solve(it: impl Iterator<Item=IVec2>) -> usize {
+fn solve(it: impl Iterator<Item = IVec2>) -> usize {
     let mut points = HashSet::new();
     let mut finished = HashSet::new();
     for point in it {
-
         if !points.contains(&point) {
             points.insert(point);
         } else {
             finished.insert(point);
         }
     }
-    
+
     finished.len()
 }
 
 struct Line(IVec2, IVec2);
 
-impl Line {    
-    fn iter(&self) -> impl Iterator<Item=IVec2> {
+impl Line {
+    fn iter(&self) -> impl Iterator<Item = IVec2> {
         let dir = (self.1 - self.0).signum();
         let n = (self.0.x - self.1.x).abs().max((self.0.y - self.1.y).abs());
         let start = self.0;
-        (0..=n).map(move |i| dir * i + start).into_iter()
+        (0..=n).map(move |i| dir * i + start)
     }
 }
 
@@ -66,4 +69,3 @@ impl FromStr for Line {
         ))
     }
 }
-

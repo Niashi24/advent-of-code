@@ -1,9 +1,9 @@
 use crate::day::SeparatedSolver;
 use std::io::BufRead;
 
-pub struct Day221;
+pub struct Day2;
 
-impl SeparatedSolver for Day221 {
+impl SeparatedSolver for Day2 {
     fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
         let (mut x, mut y): (i32, i32) = (0, 0);
 

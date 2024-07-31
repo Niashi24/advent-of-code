@@ -9,16 +9,16 @@ use itertools::Itertools;
 
 use crate::day::CombinedSolver;
 
-pub struct Day1921;
+pub struct Day19;
 
-impl CombinedSolver for Day1921 {
+impl CombinedSolver for Day19 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut scanners = parse_scanners(input.lines().map(Result::unwrap));
 
         let mut found = scanners.swap_remove(0);
         let mut pairs = offset_pairs(found.iter().copied());
         let mut to_process = vec![];
-        
+
         let mut positions = vec![IVec3::ZERO];
 
         while !scanners.is_empty() {
@@ -27,8 +27,7 @@ impl CombinedSolver for Day1921 {
                     positions.push(o);
                     for v in scanner.into_iter().map(|v| off_rot(v, o, r)) {
                         if !found.contains(&v) {
-                            pairs.extend(found.iter().copied()
-                                .map(|b| get_offset(v, b)));
+                            pairs.extend(found.iter().copied().map(|b| get_offset(v, b)));
                             found.insert(v);
                         }
                     }
@@ -36,36 +35,40 @@ impl CombinedSolver for Day1921 {
                     to_process.push(scanner);
                 }
             }
-            
+
             std::mem::swap(&mut to_process, &mut scanners);
         }
 
         let part_1 = found.len();
-        let part_2 = positions.iter().copied()
+        let part_2 = positions
+            .iter()
+            .copied()
             .tuple_combinations()
             .map(|(a, b)| (a - b).abs().to_array().into_iter().sum::<i32>())
-            .max().unwrap();
+            .max()
+            .unwrap();
 
         Ok((part_1.to_string(), part_2.to_string()))
     }
 }
 
-fn parse_scanners(lines: impl Iterator<Item=String>) -> Vec<HashSet<IVec3>> {
+fn parse_scanners(lines: impl Iterator<Item = String>) -> Vec<HashSet<IVec3>> {
     let mut sets: Vec<HashSet<IVec3>> = Vec::new();
     let mut current_set = HashSet::new();
-    let mut lines = lines.peekable();
 
-    while let Some(line) = lines.next() {
+    for line in lines {
         if line.starts_with("--- scanner") {
             if !current_set.is_empty() {
                 sets.push(current_set);
                 current_set = HashSet::new();
             }
         } else if !line.is_empty() {
-            let arr = line.split(",")
+            let arr = line
+                .split(",")
                 .map(|i| i.parse::<i32>().unwrap())
                 .collect_vec()
-                .try_into().unwrap();
+                .try_into()
+                .unwrap();
 
             current_set.insert(IVec3::from_array(arr));
         }
@@ -106,10 +109,7 @@ const ROTS: [Quat; 24] = [
 ];
 
 fn rotate_offset(a: &HashSet<IVec3>, r: Quat, o: IVec3) -> HashSet<IVec3> {
-    a.iter()
-        .copied()
-        .map(|v| off_rot(v, o, r))
-        .collect()
+    a.iter().copied().map(|v| off_rot(v, o, r)).collect()
 }
 
 fn find_pos(a_pairs: &HashMap<IVec3, IVec3>, b: &HashSet<IVec3>) -> Option<(IVec3, Quat)> {
@@ -117,16 +117,18 @@ fn find_pos(a_pairs: &HashMap<IVec3, IVec3>, b: &HashSet<IVec3>) -> Option<(IVec
         .flat_map(|r| {
             let b = rotate_offset(b, r, IVec3::ZERO);
             let b_pairs = offset_pairs(b.iter().copied());
-            let x = key_intersection(&b_pairs, &a_pairs)
+            let x = key_intersection(&b_pairs, a_pairs)
                 .nth(12)
-                .map(|(&a_1, &b_1)| {
-                    (b_1 - a_1, r)
-                }); x
+                .map(|(&a_1, &b_1)| (b_1 - a_1, r));
+            x
         })
         .next()
 }
 
-fn key_intersection<'a, K: Eq + Hash, V>(a: &'a HashMap<K, V>, b: &'a HashMap<K, V>) -> impl Iterator<Item=(&'a V, &'a V)> {
+fn key_intersection<'a, K: Eq + Hash, V>(
+    a: &'a HashMap<K, V>,
+    b: &'a HashMap<K, V>,
+) -> impl Iterator<Item = (&'a V, &'a V)> {
     a.iter().flat_map(|(k, v)| b.get(k).map(|v_2| (v, v_2)))
 }
 
@@ -134,7 +136,7 @@ fn off_rot(a: IVec3, o: IVec3, r: Quat) -> IVec3 {
     (r * a.as_vec3()).round().as_ivec3() + o
 }
 
-fn offset_pairs(it: impl Iterator<Item=IVec3> + Clone) -> HashMap<IVec3, IVec3> {
+fn offset_pairs(it: impl Iterator<Item = IVec3> + Clone) -> HashMap<IVec3, IVec3> {
     it.tuple_combinations()
         .map(|(a, b)| get_offset(a, b))
         .collect()

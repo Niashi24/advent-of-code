@@ -9,25 +9,35 @@ use smallvec::SmallVec;
 use crate::day::CombinedSolver;
 use crate::grid::Grid;
 
-pub struct Day921;
+pub struct Day9;
 
-impl CombinedSolver for Day921 {
+impl CombinedSolver for Day9 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
-        let grid: Grid<u8> = input.lines().map(Result::unwrap)
-            .map(|l| l.chars().map(|c| c.to_digit(10).unwrap() as u8).collect_vec())
+        let grid: Grid<u8> = input
+            .lines()
+            .map(Result::unwrap)
+            .map(|l| {
+                l.chars()
+                    .map(|c| c.to_digit(10).unwrap() as u8)
+                    .collect_vec()
+            })
             .collect();
 
-        let low_points = grid.iter()
+        let low_points = grid
+            .iter()
             .filter(|&((x, y), a)| {
                 // top
-                successors((x, y), &grid).into_iter()
+                successors((x, y), &grid)
+                    .into_iter()
                     .map(|(x, y)| *grid.get(x, y).unwrap())
                     .all(|b| *a < b)
             })
             .map(|(p, _)| p)
             .collect_vec();
 
-        let part_1 = low_points.iter().copied()
+        let part_1 = low_points
+            .iter()
+            .copied()
             .map(|(x, y)| *grid.get(x, y).unwrap() as usize + 1)
             .sum::<usize>();
 
@@ -36,9 +46,11 @@ impl CombinedSolver for Day921 {
         let mut total = BinaryHeap::new();
         while let Some(start) = to_visit.pop() {
             let mut count = 0;
-            for x in bfs_reach(start,
-                               |&p| successors(p, &grid).into_iter()
-                                   .filter(|&(x, y)| !grid.get(x, y).is_some_and(|n| *n == 9))) {
+            for x in bfs_reach(start, |&p| {
+                successors(p, &grid)
+                    .into_iter()
+                    .filter(|&(x, y)| !grid.get(x, y).is_some_and(|n| *n == 9))
+            }) {
                 to_visit.swap_remove(&x);
                 count += 1;
             }

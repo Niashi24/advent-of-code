@@ -7,32 +7,49 @@ use smallvec::SmallVec;
 use crate::day::CombinedSolver;
 use crate::grid::Grid;
 
-pub struct Day1521;
+pub struct Day15;
 
-impl CombinedSolver for Day1521 {
+impl CombinedSolver for Day15 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
-        let grid: Grid<u8> = input.lines().map(Result::unwrap)
-            .map(|l| l.chars().map(|c| c.to_digit(10).unwrap() as u8).collect_vec())
+        let grid: Grid<u8> = input
+            .lines()
+            .map(Result::unwrap)
+            .map(|l| {
+                l.chars()
+                    .map(|c| c.to_digit(10).unwrap() as u8)
+                    .collect_vec()
+            })
             .collect();
 
         let bottom_right = (grid.w - 1, grid.h - 1);
 
         let risk = astar(
             &(0, 0),
-            |p| successors(*p, grid.w, grid.h).into_iter().map(|p| (p, *grid.get(p.0, p.1).unwrap() as usize)),
+            |p| {
+                successors(*p, grid.w, grid.h)
+                    .into_iter()
+                    .map(|p| (p, *grid.get(p.0, p.1).unwrap() as usize))
+            },
             |p| bottom_right.0.abs_diff(p.0) + bottom_right.1.abs_diff(p.1),
             |p| *p == bottom_right,
-        ).unwrap().1;
+        )
+        .unwrap()
+        .1;
 
         let bottom_right = (grid.w * 5 - 1, grid.h * 5 - 1);
 
         let risk_2 = astar(
             &(0, 0),
-            |p| successors(*p, grid.w * 5, grid.h * 5).into_iter()
-                .map(|p| (p, cost(p, &grid))),
+            |p| {
+                successors(*p, grid.w * 5, grid.h * 5)
+                    .into_iter()
+                    .map(|p| (p, cost(p, &grid)))
+            },
             |p| bottom_right.0.abs_diff(p.0) + bottom_right.1.abs_diff(p.1),
             |p| *p == bottom_right,
-        ).unwrap().1;
+        )
+        .unwrap()
+        .1;
 
         Ok((risk.to_string(), risk_2.to_string()))
     }

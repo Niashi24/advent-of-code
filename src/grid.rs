@@ -93,7 +93,9 @@ impl<T> Grid<T> {
 
     pub fn iter_mut(&mut self) -> impl Iterator<Item = ((usize, usize), &mut T)> {
         self.grid.iter_mut().enumerate().flat_map(|(y, row)| {
-            row.iter_mut().enumerate().map(move |(x, elem)| ((x, y), elem))
+            row.iter_mut()
+                .enumerate()
+                .map(move |(x, elem)| ((x, y), elem))
         })
     }
 }
@@ -142,7 +144,9 @@ impl<T> Iterator for GridIntoIter<T> {
             return None;
         }
 
-        let item = self.grid[self.y].pop_front().map(|value| ((self.x, self.y), value));
+        let item = self.grid[self.y]
+            .pop_front()
+            .map(|value| ((self.x, self.y), value));
 
         self.x += 1;
         if self.grid[self.y].is_empty() {
@@ -160,8 +164,10 @@ impl<T> IntoIterator for Grid<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         Self::IntoIter {
-            grid: self.grid.into_iter()
-                .map(|row| VecDeque::from(row))
+            grid: self
+                .grid
+                .into_iter()
+                .map(VecDeque::from)
                 .collect(),
             x: 0,
             y: 0,

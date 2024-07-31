@@ -13,12 +13,12 @@ use crate::day::{Answer, Day, DayInfo, DaysMeta, Solver, SolverDatabase};
 
 pub mod cli;
 pub mod day;
-pub mod solver;
 pub mod grid;
+pub mod solver;
 
 fn main() -> anyhow::Result<()> {
     let args = RunType::parse();
-    let meta = parse_meta(&Path::new("data/meta.json")).unwrap_or_default();
+    let meta = parse_meta(Path::new("data/meta.json")).unwrap_or_default();
 
     match args {
         RunType::Interactive => interactive(meta),
@@ -55,11 +55,14 @@ pub struct NoSolver(Day);
 fn run_all(meta: &DaysMeta) -> anyhow::Result<Duration> {
     let mut total = Duration::default();
 
-    let mut days: Vec<(Day, &DayInfo)> =
-    meta.0.iter().map(|(s, i)| {
-        let day = s.parse().unwrap();
-        (day, i)
-    }).collect_vec();
+    let mut days: Vec<(Day, &DayInfo)> = meta
+        .0
+        .iter()
+        .map(|(s, i)| {
+            let day = s.parse().unwrap();
+            (day, i)
+        })
+        .collect_vec();
 
     days.sort_unstable_by_key(|x| x.0);
 
@@ -67,9 +70,9 @@ fn run_all(meta: &DaysMeta) -> anyhow::Result<Duration> {
         let full = File::open(&info.full)?;
         let full = Box::new(BufReader::new(full));
 
-        let solver = SolverDatabase::default()
+        let solver = SolverDatabase::global()
             .get_solver(&day)
-            .ok_or_else(|| NoSolver(day.clone()))?;
+            .ok_or(NoSolver(day))?;
         match solver {
             Solver::Combined(solver) => {
                 let (r, t) = time_fn(|| solver.solve(full));
@@ -153,7 +156,7 @@ impl Display for Part {
 fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
     let RunArgs { day, source, part } = args;
 
-    let Some(solver) = SolverDatabase::default().get_solver(&day) else {
+    let Some(solver) = SolverDatabase::global().get_solver(&day) else {
         return Err(RunError::NoSolver(day));
     };
 
