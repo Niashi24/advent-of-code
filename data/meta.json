@@ -271,7 +271,10 @@
       "Single": {
         "path": "data/2021/ex-20-21.txt",
         "expected_answer": {
-          "P1": "35"
+          "Both": [
+            "35",
+            "3351"
+          ]
         }
       }
     }

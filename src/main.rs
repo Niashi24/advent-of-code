@@ -13,8 +13,8 @@ use crate::day::{Answer, Day, DayInfo, DaysMeta, Solver, SolverDatabase};
 
 pub mod cli;
 pub mod day;
-pub mod grid;
 pub mod solver;
+mod utils;
 
 fn main() -> anyhow::Result<()> {
     let args = RunType::parse();

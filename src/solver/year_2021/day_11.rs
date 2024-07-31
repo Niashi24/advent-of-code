@@ -1,5 +1,5 @@
 use crate::day::SeparatedSolver;
-use crate::grid::Grid;
+use crate::utils::grid::Grid;
 use itertools::Itertools;
 use smallvec::SmallVec;
 use std::collections::HashSet;
