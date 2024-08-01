@@ -22,6 +22,7 @@ pub mod day_9;
 mod day_20;
 mod day_21;
 mod day_22;
+mod day_23;
 
 pub fn add_all(solver_database: &mut SolverDatabase) {
     let solvers = vec![
