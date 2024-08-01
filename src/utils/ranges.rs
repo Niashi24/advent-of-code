@@ -1,17 +1,16 @@
-﻿use std::collections::hash_map::RandomState;
-use std::fmt::{Display, Formatter};
-use std::ops::{Add, Range};
+﻿use std::fmt::{Display, Formatter};
+use std::ops::Range;
+
 use itertools::Itertools;
-use num::{Bounded, One};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RangeD<const N: usize> {
-    pub(crate) start: [i32; N],
-    pub(crate) end: [i32; N]
+    pub(crate) start: [i64; N],
+    pub(crate) end: [i64; N]
 }
 
 impl<'a, const N: usize> IntoIterator for &'a RangeD<N> {
-    type Item = [i32; N];
+    type Item = [i64; N];
     type IntoIter = RangeDIterator<'a, N>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -28,14 +27,14 @@ impl<const N: usize> Display for RangeD<N> {
 }
 
 impl<const N: usize> RangeD<N> {
-    pub fn from_range_1d(ranges: [Range<i32>; N]) -> Self {
+    pub fn from_range_1d(ranges: [Range<i64>; N]) -> Self {
         Self {
             start: ranges.clone().map(|x| x.start),
             end: ranges.clone().map(|x| x.end),
         }
     }
     
-    pub fn offset(&mut self, offset: i32) {
+    pub fn offset(&mut self, offset: i64) {
         self.start.iter_mut().for_each(|i| *i += offset);
         self.end.iter_mut().for_each(|i| *i += offset);
     }
@@ -45,7 +44,7 @@ impl<const N: usize> RangeD<N> {
     //     self.end.iter_mut().for_each(|i| *i -= offset);
     // }
     
-    pub fn offset_component(&mut self, i: usize, offset: i32) {
+    pub fn offset_component(&mut self, i: usize, offset: i64) {
         self.start[i] += offset;
         self.end[i] += offset;
     }
@@ -55,7 +54,7 @@ impl<const N: usize> RangeD<N> {
     //     self.end[i] -= offset;
     // }
     
-    pub fn volume(&self) -> i32 {
+    pub fn volume(&self) -> i64 {
         self.start.iter().zip(self.end.iter()).map(|(s, e)| e - s).product()
     }
     
@@ -80,35 +79,33 @@ impl<const N: usize> RangeD<N> {
     }
 
     pub fn difference(&self, other: &Self) -> Vec<Self> {
-        let mut differences = Vec::new();
+        let mut result = Vec::new();
 
-        if let Some(intersect) = self.intersect(other) {
-            // Generate ranges for each dimension where `self` is not covered by the intersection
-            for i in 0..N {
-                if self.start[i] < intersect.start[i] {
-                    let mut new_start = self.start.clone();
-                    let mut new_end = self.end.clone();
-                    new_end[i] = intersect.start[i];
-                    differences.push(Self {
-                        start: new_start,
-                        end: new_end,
-                    });
-                }
-                if self.end[i] > intersect.end[i] {
-                    let mut new_start = self.start.clone();
-                    let mut new_end = self.end.clone();
-                    new_start[i] = intersect.end[i];
-                    differences.push(Self {
-                        start: new_start,
-                        end: new_end,
-                    });
-                }
-            }
-        } else {
-            differences.push(self.clone());
+        // Check if there is no intersection.
+        if self.start.iter().zip(&other.end).any(|(s, e)| s >= e) || self.end.iter().zip(&other.start).any(|(e, s)| e <= s) {
+            result.push(self.clone());
+            return result;
         }
 
-        differences
+        let mut rest = self.clone();
+
+        for i in 0..N {
+            if other.start[i] > rest.start[i] {
+                let mut fragment = rest.clone();
+                fragment.end[i] = other.start[i];
+                rest.start[i] = other.start[i];
+                result.push(fragment);
+            }
+
+            if other.end[i] < rest.end[i] {
+                let mut fragment = rest.clone();
+                fragment.start[i] = other.end[i];
+                rest.end[i] = other.end[i];
+                result.push(fragment);
+            }
+        }
+
+        result
     }
     
     pub fn intersects(&self, other: &Self) -> bool {
@@ -121,7 +118,7 @@ impl<const N: usize> RangeD<N> {
         contains_simple::<N>(self, other) || contains_simple::<N>(other, self)
     }
     
-    pub fn len_d(&self, i: usize) -> i32 {
+    pub fn len_d(&self, i: usize) -> i64 {
         self.end[i] - self.start[i]
     }
     
@@ -156,7 +153,7 @@ fn difference_1d() {
 
 pub struct RangeDIterator<'a, const N: usize> {
     ranges: &'a RangeD<N>,
-    values: [i32; N]
+    values: [i64; N]
 }
 
 impl<'a, const N: usize> RangeDIterator<'a, N> {
@@ -169,14 +166,14 @@ impl<'a, const N: usize> RangeDIterator<'a, N> {
 }
 
 impl<'a, const N: usize> Iterator for RangeDIterator<'a, N> {
-    type Item = [i32; N];
+    type Item = [i64; N];
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.values[0] == self.ranges.end[0] {
             return None;
         }
         
-        fn increment<const N: usize>(indices: &mut [i32; N], ranges: &RangeD<N>, i: usize) {
+        fn increment<const N: usize>(indices: &mut [i64; N], ranges: &RangeD<N>, i: usize) {
             indices[i] += 1;
             if ranges.end[i] == indices[i] && i != 0 {
                 indices[i] = ranges.start[i];
