@@ -5,8 +5,8 @@ use itertools::Itertools;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RangeD<const N: usize> {
-    pub(crate) start: [i64; N],
-    pub(crate) end: [i64; N]
+    pub start: [i64; N],
+    pub end: [i64; N]
 }
 
 impl<'a, const N: usize> IntoIterator for &'a RangeD<N> {
@@ -171,14 +171,6 @@ impl<'a, const N: usize> Iterator for RangeDIterator<'a, N> {
     fn next(&mut self) -> Option<Self::Item> {
         if self.values[0] == self.ranges.end[0] {
             return None;
-        }
-        
-        fn increment<const N: usize>(indices: &mut [i64; N], ranges: &RangeD<N>, i: usize) {
-            indices[i] += 1;
-            if ranges.end[i] == indices[i] && i != 0 {
-                indices[i] = ranges.start[i];
-                increment(indices, ranges, i - 1);
-            }
         }
         let item = self.values;
         

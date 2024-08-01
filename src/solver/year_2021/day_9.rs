@@ -7,7 +7,7 @@ use pathfinding::prelude::bfs_reach;
 use smallvec::SmallVec;
 
 use crate::day::CombinedSolver;
-use crate::utils::grid::Grid;
+use utils::grid::Grid;
 
 pub struct Day9;
 

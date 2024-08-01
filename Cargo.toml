@@ -3,7 +3,11 @@ name = "advent-of-code"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+members = ["utils"]
+
 [dependencies]
+utils = { path = "utils" }
 anyhow = "1.0.86"
 clap = { version = "4.5.9", features = ["cargo", "derive"] }
 colored = "2.1.0"

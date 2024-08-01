@@ -2,7 +2,7 @@ use std::io::BufRead;
 use std::str::FromStr;
 use itertools::Itertools;
 use crate::day::CombinedSolver;
-use crate::utils::ranges::RangeD;
+use utils::ranges::RangeD;
 
 pub struct Day22;
 

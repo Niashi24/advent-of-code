@@ -5,7 +5,7 @@ use pathfinding::prelude::astar;
 use smallvec::SmallVec;
 
 use crate::day::CombinedSolver;
-use crate::utils::grid::Grid;
+use utils::grid::Grid;
 
 pub struct Day15;
 
