@@ -114,6 +114,10 @@ pub fn add_all(solver_database: &mut SolverDatabase) {
             Day::new(22, 2021),
             Solver::Combined(Box::new(day_22::Day22)),
         ),
+        (
+            Day::new(23, 2021),
+            Solver::Combined(Box::new(day_23::Day23)),
+        ),
     ];
 
     for (day, solver) in solvers {
