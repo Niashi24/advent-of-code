@@ -444,13 +444,15 @@ impl State {
                                 match p {
                                     // can move inside if still inside initial
                                     // or color matches
-                                    PosNew::I(i) => i.amp == ip.amp || i.amp == amp,
+                                    PosNew::I(i) => (i.amp == ip.amp && i.depth > ip.depth) || i.amp == amp,
                                     // can always move anywhere outside
                                     PosNew::O(_) => true,
                                 }
                             })
                             .collect_vec()
                     };
+                    
+                    
 
                     for p in dijkstra_reach(&pos, successor_inside) {
                         // no point moving to another place inside
