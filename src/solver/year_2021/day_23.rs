@@ -47,7 +47,7 @@ impl CombinedSolver for Day23 {
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 enum PosNew {
     I(IP),
-    O(u8),
+    O(OU),
 }
 
 impl PosNew {
@@ -55,61 +55,61 @@ impl PosNew {
         use PosNew as P;
         use Amphipod as A;
         match (self, other) {
-            (P::O(1), P::O(2)) => 1,
-            (P::O(1), P::O(3)) => 3,
-            (P::O(1), P::O(4)) => 5,
-            (P::O(1), P::O(5)) => 7,
-            (P::O(1), P::O(6)) => 9,
-            (P::O(1), P::O(7)) => 10,
-            (P::O(1), P::I(IP { depth, amp: A::A })) => 3 + depth as usize,
-            (P::O(1), P::I(IP { depth, amp: A::B })) => 5 + depth as usize,
-            (P::O(1), P::I(IP { depth, amp: A::C })) => 7 + depth as usize,
-            (P::O(1), P::I(IP { depth, amp: A::D })) => 9 + depth as usize,
+            (P::O(OU(1)), P::O(OU(2))) => 1,
+            (P::O(OU(1)), P::O(OU(3))) => 3,
+            (P::O(OU(1)), P::O(OU(4))) => 5,
+            (P::O(OU(1)), P::O(OU(5))) => 7,
+            (P::O(OU(1)), P::O(OU(6))) => 9,
+            (P::O(OU(1)), P::O(OU(7))) => 10,
+            (P::O(OU(1)), P::I(IP { depth, amp: A::A })) => 3 + depth as usize,
+            (P::O(OU(1)), P::I(IP { depth, amp: A::B })) => 5 + depth as usize,
+            (P::O(OU(1)), P::I(IP { depth, amp: A::C })) => 7 + depth as usize,
+            (P::O(OU(1)), P::I(IP { depth, amp: A::D })) => 9 + depth as usize,
 
-            (P::O(2), P::O(3)) => 2,
-            (P::O(2), P::O(4)) => 4,
-            (P::O(2), P::O(5)) => 6,
-            (P::O(2), P::O(6)) => 8,
-            (P::O(2), P::O(7)) => 9,
-            (P::O(2), P::I(IP { depth, amp: A::A })) => 2 + depth as usize,
-            (P::O(2), P::I(IP { depth, amp: A::B })) => 4 + depth as usize,
-            (P::O(2), P::I(IP { depth, amp: A::C })) => 6 + depth as usize,
-            (P::O(2), P::I(IP { depth, amp: A::D })) => 8 + depth as usize,
+            (P::O(OU(2)), P::O(OU(3))) => 2,
+            (P::O(OU(2)), P::O(OU(4))) => 4,
+            (P::O(OU(2)), P::O(OU(5))) => 6,
+            (P::O(OU(2)), P::O(OU(6))) => 8,
+            (P::O(OU(2)), P::O(OU(7))) => 9,
+            (P::O(OU(2)), P::I(IP { depth, amp: A::A })) => 2 + depth as usize,
+            (P::O(OU(2)), P::I(IP { depth, amp: A::B })) => 4 + depth as usize,
+            (P::O(OU(2)), P::I(IP { depth, amp: A::C })) => 6 + depth as usize,
+            (P::O(OU(2)), P::I(IP { depth, amp: A::D })) => 8 + depth as usize,
 
-            (P::O(3), P::O(4)) => 2,
-            (P::O(3), P::O(5)) => 4,
-            (P::O(3), P::O(6)) => 6,
-            (P::O(3), P::O(7)) => 7,
-            (P::O(3), P::I(IP { depth, amp: A::A })) => 2 + depth as usize,
-            (P::O(3), P::I(IP { depth, amp: A::B })) => 2 + depth as usize,
-            (P::O(3), P::I(IP { depth, amp: A::C })) => 4 + depth as usize,
-            (P::O(3), P::I(IP { depth, amp: A::D })) => 6 + depth as usize,
+            (P::O(OU(3)), P::O(OU(4))) => 2,
+            (P::O(OU(3)), P::O(OU(5))) => 4,
+            (P::O(OU(3)), P::O(OU(6))) => 6,
+            (P::O(OU(3)), P::O(OU(7))) => 7,
+            (P::O(OU(3)), P::I(IP { depth, amp: A::A })) => 2 + depth as usize,
+            (P::O(OU(3)), P::I(IP { depth, amp: A::B })) => 2 + depth as usize,
+            (P::O(OU(3)), P::I(IP { depth, amp: A::C })) => 4 + depth as usize,
+            (P::O(OU(3)), P::I(IP { depth, amp: A::D })) => 6 + depth as usize,
 
-            (P::O(4), P::O(5)) => 2,
-            (P::O(4), P::O(6)) => 4,
-            (P::O(4), P::O(7)) => 5,
-            (P::O(4), P::I(IP { depth, amp: A::A })) => 4 + depth as usize,
-            (P::O(4), P::I(IP { depth, amp: A::B })) => 2 + depth as usize,
-            (P::O(4), P::I(IP { depth, amp: A::C })) => 2 + depth as usize,
-            (P::O(4), P::I(IP { depth, amp: A::D })) => 4 + depth as usize,
+            (P::O(OU(4)), P::O(OU(5))) => 2,
+            (P::O(OU(4)), P::O(OU(6))) => 4,
+            (P::O(OU(4)), P::O(OU(7))) => 5,
+            (P::O(OU(4)), P::I(IP { depth, amp: A::A })) => 4 + depth as usize,
+            (P::O(OU(4)), P::I(IP { depth, amp: A::B })) => 2 + depth as usize,
+            (P::O(OU(4)), P::I(IP { depth, amp: A::C })) => 2 + depth as usize,
+            (P::O(OU(4)), P::I(IP { depth, amp: A::D })) => 4 + depth as usize,
 
-            (P::O(5), P::O(6)) => 2,
-            (P::O(5), P::O(7)) => 3,
-            (P::O(5), P::I(IP { depth, amp: A::A })) => 6 + depth as usize,
-            (P::O(5), P::I(IP { depth, amp: A::B })) => 4 + depth as usize,
-            (P::O(5), P::I(IP { depth, amp: A::C })) => 2 + depth as usize,
-            (P::O(5), P::I(IP { depth, amp: A::D })) => 2 + depth as usize,
+            (P::O(OU(5)), P::O(OU(6))) => 2,
+            (P::O(OU(5)), P::O(OU(7))) => 3,
+            (P::O(OU(5)), P::I(IP { depth, amp: A::A })) => 6 + depth as usize,
+            (P::O(OU(5)), P::I(IP { depth, amp: A::B })) => 4 + depth as usize,
+            (P::O(OU(5)), P::I(IP { depth, amp: A::C })) => 2 + depth as usize,
+            (P::O(OU(5)), P::I(IP { depth, amp: A::D })) => 2 + depth as usize,
 
-            (P::O(6), P::O(7)) => 1,
-            (P::O(6), P::I(IP { depth, amp: A::A })) => 8 + depth as usize,
-            (P::O(6), P::I(IP { depth, amp: A::B })) => 6 + depth as usize,
-            (P::O(6), P::I(IP { depth, amp: A::C })) => 4 + depth as usize,
-            (P::O(6), P::I(IP { depth, amp: A::D })) => 2 + depth as usize,
+            (P::O(OU(6)), P::O(OU(7))) => 1,
+            (P::O(OU(6)), P::I(IP { depth, amp: A::A })) => 8 + depth as usize,
+            (P::O(OU(6)), P::I(IP { depth, amp: A::B })) => 6 + depth as usize,
+            (P::O(OU(6)), P::I(IP { depth, amp: A::C })) => 4 + depth as usize,
+            (P::O(OU(6)), P::I(IP { depth, amp: A::D })) => 2 + depth as usize,
 
-            (P::O(7), P::I(IP { depth, amp: A::A })) => 9 + depth as usize,
-            (P::O(7), P::I(IP { depth, amp: A::B })) => 7 + depth as usize,
-            (P::O(7), P::I(IP { depth, amp: A::C })) => 5 + depth as usize,
-            (P::O(7), P::I(IP { depth, amp: A::D })) => 3 + depth as usize,
+            (P::O(OU(7)), P::I(IP { depth, amp: A::A })) => 9 + depth as usize,
+            (P::O(OU(7)), P::I(IP { depth, amp: A::B })) => 7 + depth as usize,
+            (P::O(OU(7)), P::I(IP { depth, amp: A::C })) => 5 + depth as usize,
+            (P::O(OU(7)), P::I(IP { depth, amp: A::D })) => 3 + depth as usize,
 
             (P::I(IP { depth: d_1, amp: a_1 }), P::I(IP { depth: d_2, amp: a_2 })) if a_1 == a_2 => d_1.abs_diff(d_2) as usize,
 
@@ -139,23 +139,23 @@ impl PosNew {
         match *self {
             P::O(i) => {
                 match i {
-                    1 => smallvec![(P::O(2), 1)],
-                    2 => smallvec![(P::O(1), 1), (P::O(3), 2), (P::I(IP::new(0, A::A)), 2)],
-                    3 => smallvec![(P::O(2), 2), (P::O(4), 2), (P::I(IP::new(0, A::A)), 2), (P::I(IP::new(0, A::B)), 2)],
-                    4 => smallvec![(P::O(3), 2), (P::O(5), 2), (P::I(IP::new(0, A::B)), 2), (P::I(IP::new(0, A::C)), 2)],
-                    5 => smallvec![(P::O(4), 2), (P::O(6), 2), (P::I(IP::new(0, A::C)), 2), (P::I(IP::new(0, A::D)), 2)],
-                    6 => smallvec![(P::O(7), 1), (P::O(5), 2), (P::I(IP::new(0, A::D)), 2)],
-                    7 => smallvec![(P::O(6), 1)],
+                    OU(1) => smallvec![(P::O(OU(2)), 1)],
+                    OU(2) => smallvec![(P::O(OU(1)), 1), (P::O(OU(3)), 2), (P::I(IP::new(0, A::A)), 2)],
+                    OU(3) => smallvec![(P::O(OU(2)), 2), (P::O(OU(4)), 2), (P::I(IP::new(0, A::A)), 2), (P::I(IP::new(0, A::B)), 2)],
+                    OU(4) => smallvec![(P::O(OU(3)), 2), (P::O(OU(5)), 2), (P::I(IP::new(0, A::B)), 2), (P::I(IP::new(0, A::C)), 2)],
+                    OU(5) => smallvec![(P::O(OU(4)), 2), (P::O(OU(6)), 2), (P::I(IP::new(0, A::C)), 2), (P::I(IP::new(0, A::D)), 2)],
+                    OU(6) => smallvec![(P::O(OU(7)), 1), (P::O(OU(5)), 2), (P::I(IP::new(0, A::D)), 2)],
+                    OU(7) => smallvec![(P::O(OU(6)), 1)],
 
-                    _ => panic!("{i}"),
+                    _ => panic!("{}", i.0),
                 }
             }
             P::I(IP { depth: 0, amp }) => {
                 match amp {
-                    Amphipod::A => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(2), 2), (P::O(3), 2)],
-                    Amphipod::B => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(3), 2), (P::O(4), 2)],
-                    Amphipod::C => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(4), 2), (P::O(5), 2)],
-                    Amphipod::D => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(5), 2), (P::O(6), 2)],
+                    Amphipod::A => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(2)), 2), (P::O(OU(3)), 2)],
+                    Amphipod::B => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(3)), 2), (P::O(OU(4)), 2)],
+                    Amphipod::C => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(4)), 2), (P::O(OU(5)), 2)],
+                    Amphipod::D => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(5)), 2), (P::O(OU(6)), 2)],
                 }
             }
             P::I(x) => {
@@ -169,6 +169,23 @@ impl PosNew {
                 out
             }
         }
+    }
+
+    fn path(self, other: Self) -> SmallVec<[Self; 8]> {
+        use PosNew as P;
+        match (self, other) {
+            (a, b) if a == b => smallvec![],
+            (P::O(OU(a)), P::O(OU(b))) => {
+                (a.min(b)..a.max(b))
+                    .map(|i| P::O(OU(i)))
+                    .collect()
+            },
+            (P::O(OU(a)), P::I(b)) | (P::I(b), P::O(OU(a))) => {
+                todo!()
+            }
+            _ => other.path(self)
+        }
+
     }
 }
 
@@ -195,23 +212,23 @@ impl IP {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
-enum Position {
-    O1,
-    O2,
-    O3,
-    O4,
-    O5,
-    O6,
-    O7,
-    A1,
-    A2,
-    B1,
-    B2,
-    C1,
-    C2,
-    D1,
-    D2,
-}
+struct OU(u8);
+
+// impl OU {
+//     pub fn path(self, other: Self) -> SmallVec<[Self; 7]> {
+//         match (self, other) {
+//             (a, b) if a == b => smallvec![],
+//
+//             (OU(1), OU(2)) => smallvec![OU(2)],
+//             (OU(1), OU(3)) => smallvec![OU(2), OU(3)],
+//             (OU(1), OU(4)) => smallvec![OU(2)],
+//             (OU(1), OU(5)) => smallvec![OU(2)],
+//             (OU(1), OU(6)) => smallvec![OU(2)],
+//             (OU(1), OU(7)) => smallvec![OU(2)],
+//             _ => other.path(self)
+//         }
+//     }
+// }
 
 // #############
 // #12.3.4.5.67#
@@ -219,64 +236,7 @@ enum Position {
 //   #1#1#1#1#
 //   #########
 
-impl Position {
-    fn neighbors(self) -> SmallVec<[(Position, usize); 4]> {
-        use Position as P;
-        match self {
-            P::O1 => smallvec![(P::O2, 1)],
-            P::O2 => smallvec![(P::O1, 1), (P::O3, 2), (P::A2, 2)],
-            P::O3 => smallvec![(P::O2, 2), (P::O4, 2), (P::A2, 2), (P::B2, 2)],
-            P::O4 => smallvec![(P::O3, 2), (P::O5, 2), (P::B2, 2), (P::C2, 2)],
-            P::O5 => smallvec![(P::O4, 2), (P::O6, 2), (P::C2, 2), (P::D2, 2)],
-            P::O6 => smallvec![(P::O7, 1), (P::O5, 2), (P::D2, 2)],
-            P::O7 => smallvec![(P::O6, 1)],
 
-            P::A1 => smallvec![(P::A2, 1)],
-            P::A2 => smallvec![(P::A1, 1), (P::O2, 2), (P::O3, 2)],
-            P::B1 => smallvec![(P::B2, 1)],
-            P::B2 => smallvec![(P::B1, 1), (P::O3, 2), (P::O4, 2)],
-            P::C1 => smallvec![(P::C2, 1)],
-            P::C2 => smallvec![(P::C1, 1), (P::O4, 2), (P::O5, 2)],
-            P::D1 => smallvec![(P::D2, 1)],
-            P::D2 => smallvec![(P::D1, 1), (P::O5, 2), (P::O6, 2)],
-        }
-    }
-
-    // fn is_outside(&self) -> bool {
-    //     use Position as P;
-    //     match self {
-    //         P::O1 | P::O2 | P::O3 | P::O4 | P::O5 | P::O6 | P::O7 => true,
-    //         _ => false,
-    //     }
-    // }
-
-    fn is_inside(&self) -> Option<(Amphipod, bool)> {
-        use Position as P;
-        use Amphipod as A;
-        match self {
-            P::A1 => Some((A::A, true)),
-            P::A2 => Some((A::A, false)),
-            P::B1 => Some((A::B, true)),
-            P::B2 => Some((A::B, false)),
-            P::C1 => Some((A::C, true)),
-            P::C2 => Some((A::C, false)),
-            P::D1 => Some((A::D, true)),
-            P::D2 => Some((A::D, false)),
-            _ => None,
-        }
-    }
-
-    // fn other_room(&self) -> Option<Self> {
-    //     use Position as P;
-    //     match self {
-    //         P::A1 => Some(P::A2),
-    //         P::A2 => Some(P::A1),
-    //         P::A1 => Some(P::A2),
-    //         P::A2 => Some(P::A1),
-    //         _ => None,
-    //     }
-    // }
-}
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 enum Amphipod {
@@ -300,18 +260,6 @@ impl Amphipod {
             Amphipod::B => 10,
             Amphipod::C => 100,
             Amphipod::D => 1000,
-        }
-    }
-
-    fn is_room(&self, p: Position) -> bool {
-        use Position as P;
-        use Amphipod as A;
-        match (*self, p) {
-            (A::A, P::A1) | (A::A, P::A2) => true,
-            (A::B, P::B1) | (A::B, P::B2) => true,
-            (A::C, P::C1) | (A::C, P::C2) => true,
-            (A::D, P::D1) | (A::D, P::D2) => true,
-            _ => false,
         }
     }
 
