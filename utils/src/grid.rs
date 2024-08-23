@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Grid<T> {
-    grid: Vec<Vec<T>>,
+    pub grid: Vec<Vec<T>>,
     pub w: usize,
     pub h: usize,
 }

@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::fmt::{Display, Formatter};
 use std::io::BufRead;
 use std::str::FromStr;
 use itertools::Itertools;
@@ -28,6 +29,12 @@ struct Memory {
     x: i64,
     y: i64,
     z: i64,
+}
+
+impl Display for Memory {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[w: {}, x: {}, y: {}, z: {}]", self.w, self.x, self.y, self.z)
+    }
 }
 
 impl Memory {
@@ -199,14 +206,12 @@ static mut hit: usize = 0;
 static mut total: usize = 0;
 
 fn solve(mut state: Memory, mut i: usize, cur: ModelNumber, instructions: &[Instruction], failed: &mut Failed) -> Option<ModelNumber> {
-    unsafe { total += 1; }
-    if failed.contains(&(state, i)) {
-        unsafe { hit += 1}
-        return None;
-    }
+    // unsafe { total += 1; }
+    // if failed.contains(&(state, i)) {
+    //     unsafe { hit += 1}
+    //     return None;
+    // }
 
-    print!("{} {}: ", failed.len(), unsafe { total - hit });
-    println!("{}", cur.iter().copied().join(""));
 
     // dbg!(failed.len());
 
@@ -232,10 +237,13 @@ fn solve(mut state: Memory, mut i: usize, cur: ModelNumber, instructions: &[Inst
                             if let Some(sol) = solve(state, i + 1, model, instructions, failed) {
                                 return Some(sol);
                             } else {
-                                failed.insert((state, i));
+                                // failed.insert((state, i));
                             }
                         }
-                        failed.insert((state, i));
+
+                        // print!("{} {}: ", failed.len(), unsafe { total - hit });
+                        println!("{} - {} @{}", cur.iter().copied().join(""), state, i);
+                        // failed.insert((state, i));
                         return None;
                     }
                     Instruction::O(op) => {
