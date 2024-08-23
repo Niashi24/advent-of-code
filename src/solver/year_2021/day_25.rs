@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::{BTreeSet, HashSet, VecDeque};
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
 use colored::Colorize;
@@ -184,12 +184,12 @@ fn print(grid: &Grid<Cell>, movers: &Movers) {
 
 #[derive(Default, Debug, Clone)]
 struct Movers {
-    pub east: IndexSet<(usize, usize)>,
-    pub south: IndexSet<(usize, usize)>
+    pub east: HashSet<(usize, usize)>,
+    pub south: HashSet<(usize, usize)>
 }
 
 fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
-    while let Some(p) = to_move.east.pop() {
+    for p in to_move.east.drain() {
         let n = Dir::East.step(p, grid);
         let b = Dir::East.unstep(p, grid);
         if grid.get(b.0, b.1).unwrap().0.is_some_and(|d| d.is_east()) {
@@ -205,7 +205,7 @@ fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
         candidates.east.insert(n);
     }
     
-    while let Some(p) = to_move.south.pop() {
+    for p in to_move.south.drain() {
         let n = Dir::South.step(p, &grid);
         let b = Dir::South.unstep(p, &grid);
         if grid.get(b.0, b.1).unwrap().0.is_some_and(|x| x.is_south()) {
@@ -224,13 +224,13 @@ fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
         }
     }
     
-    while let Some(p) = candidates.east.pop() {
+    for p in candidates.east.drain() {
         let n = Dir::East.step(p, grid);
         if grid.get(n.0, n.1).unwrap().0.is_none() {
             to_move.east.insert(p);
         }
     }
-    while let Some(p) = candidates.south.pop() {
+    for p in candidates.south.drain() {
         let n = Dir::South.step(p, grid);
         if grid.get(n.0, n.1).unwrap().0.is_none() {
             to_move.south.insert(p);
