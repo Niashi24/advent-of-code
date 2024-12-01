@@ -1,4 +1,3 @@
-use crate::solver::year_2021::add_all;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -126,16 +125,16 @@ impl DaysMeta {
     }
 }
 
+#[derive(Default)]
 pub struct SolverDatabase {
     map: HashMap<Day, Solver>,
 }
 
 lazy_static! {
     static ref DATABASE: SolverDatabase = {
-        let mut out = SolverDatabase {
-            map: HashMap::new(),
-        };
-        add_all(&mut out);
+        let mut out = SolverDatabase::default();
+        crate::solver::year_2021::add_all(&mut out);
+        crate::solver::year_2024::add_all(&mut out);
 
         out
     };
