@@ -5,8 +5,8 @@ mod day_1;
 pub fn add_all(solver_database: &mut SolverDatabase) {
     let solvers = vec![
         (
-            Day::new(1, 2021),
-            Solver::Separated(Box::new(day_1::Day1)),
+            Day::new(1, 2024),
+            Solver::Combined(Box::new(day_1::Day1)),
         ),
     ];
 
