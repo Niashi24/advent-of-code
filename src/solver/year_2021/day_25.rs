@@ -1,9 +1,6 @@
-use std::cmp::Ordering;
-use std::collections::{BTreeSet, HashSet, VecDeque};
+use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
-use colored::Colorize;
-use indexmap::IndexSet;
 use itertools::{Either, Itertools};
 use utils::grid::Grid;
 use crate::day::CombinedSolver;
@@ -104,7 +101,7 @@ impl Display for Cell {
 
 fn part_1(mut grid: Grid<Cell>) -> usize {
     // #[derive(PartialEq, Eq, Hash, Copy, Clone)]
-    struct State((u64, u64), usize);
+    // struct State((u64, u64), usize);
     // 
     // impl Ord for State {
     //     fn cmp(&self, other: &Self) -> Ordering {
@@ -157,30 +154,30 @@ fn part_1(mut grid: Grid<Cell>) -> usize {
     counter
 }
 
-fn print(grid: &Grid<Cell>, movers: &Movers) {
-    for (y, row) in grid.grid.iter().enumerate() {
-        for (x, c) in row.iter().enumerate() {
-            match c.0 {
-                None => print!("."),
-                Some(Dir::East) => {
-                    if movers.east.contains(&(x, y)) {
-                        print!("{}", ">".red());
-                    } else {
-                        print!(">");
-                    }
-                },
-                Some(Dir::South) => {
-                    if movers.south.contains(&(x, y)) {
-                        print!("{}", "v".blue());
-                    } else {
-                        print!("v");
-                    }
-                }
-            }
-        }
-        println!();
-    }
-}
+// fn print(grid: &Grid<Cell>, movers: &Movers) {
+//     for (y, row) in grid.grid.iter().enumerate() {
+//         for (x, c) in row.iter().enumerate() {
+//             match c.0 {
+//                 None => print!("."),
+//                 Some(Dir::East) => {
+//                     if movers.east.contains(&(x, y)) {
+//                         print!("{}", ">".red());
+//                     } else {
+//                         print!(">");
+//                     }
+//                 },
+//                 Some(Dir::South) => {
+//                     if movers.south.contains(&(x, y)) {
+//                         print!("{}", "v".blue());
+//                     } else {
+//                         print!("v");
+//                     }
+//                 }
+//             }
+//         }
+//         println!();
+//     }
+// }
 
 #[derive(Default, Debug, Clone)]
 struct Movers {

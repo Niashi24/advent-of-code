@@ -202,9 +202,6 @@ type ModelNumber = SmallVec<[u8; 14]>;
 
 type Failed = HashSet<(Memory, usize)>;
 
-static mut hit: usize = 0;
-static mut total: usize = 0;
-
 fn solve(mut state: Memory, mut i: usize, cur: ModelNumber, instructions: &[Instruction], failed: &mut Failed) -> Option<ModelNumber> {
     // unsafe { total += 1; }
     // if failed.contains(&(state, i)) {

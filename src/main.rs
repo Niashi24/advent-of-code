@@ -43,7 +43,7 @@ fn parse_meta(path: &Path) -> Option<DaysMeta> {
     Some(serde_json::from_reader(reader).unwrap())
 }
 
-fn interactive(meta: DaysMeta) {
+fn interactive(_meta: DaysMeta) {
     println!("Ran interactive");
 }
 
@@ -153,7 +153,7 @@ impl Display for Part {
 // Run only part 2 (example and full)
 // Run both part 1 and 2
 fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
-    let RunArgs { day, source, part } = args;
+    let RunArgs { day, source, part: _ } = args;
 
     let Some(solver) = SolverDatabase::global().get_solver(&day) else {
         return Err(RunError::NoSolver(day));

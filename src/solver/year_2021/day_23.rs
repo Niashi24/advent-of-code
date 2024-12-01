@@ -1,11 +1,8 @@
-use std::collections::{BTreeMap, HashMap};
-use std::fmt::{Display, Formatter};
+use std::collections::BTreeMap;
 use std::io::BufRead;
-use bimap::BiBTreeMap;
 use itertools::Itertools;
 use pathfinding::prelude::{astar, dijkstra, dijkstra_reach};
 use smallvec::{SmallVec, smallvec};
-use utils::extensions::IsNoneOr;
 use crate::day::CombinedSolver;
 
 pub struct Day23;
@@ -171,22 +168,22 @@ impl PosNew {
         }
     }
 
-    fn path(self, other: Self) -> SmallVec<[Self; 8]> {
-        use PosNew as P;
-        match (self, other) {
-            (a, b) if a == b => smallvec![],
-            (P::O(OU(a)), P::O(OU(b))) => {
-                (a.min(b)..a.max(b))
-                    .map(|i| P::O(OU(i)))
-                    .collect()
-            },
-            (P::O(OU(a)), P::I(b)) | (P::I(b), P::O(OU(a))) => {
-                todo!()
-            }
-            _ => other.path(self)
-        }
-
-    }
+    // fn path(self, other: Self) -> SmallVec<[Self; 8]> {
+    //     use PosNew as P;
+    //     match (self, other) {
+    //         (a, b) if a == b => smallvec![],
+    //         (P::O(OU(a)), P::O(OU(b))) => {
+    //             (a.min(b)..a.max(b))
+    //                 .map(|i| P::O(OU(i)))
+    //                 .collect()
+    //         },
+    //         (P::O(OU(a)), P::I(b)) | (P::I(b), P::O(OU(a))) => {
+    //             todo!()
+    //         }
+    //         _ => other.path(self)
+    //     }
+    // 
+    // }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
@@ -285,14 +282,14 @@ impl Amphipod {
         // }
     }
 
-    fn to_char(self) -> char {
-        match self {
-            Amphipod::A => 'A',
-            Amphipod::B => 'B',
-            Amphipod::C => 'C',
-            Amphipod::D => 'D',
-        }
-    }
+    // fn to_char(self) -> char {
+    //     match self {
+    //         Amphipod::A => 'A',
+    //         Amphipod::B => 'B',
+    //         Amphipod::C => 'C',
+    //         Amphipod::D => 'D',
+    //     }
+    // }
 }
 
 impl TryFrom<char> for Amphipod {
@@ -404,7 +401,7 @@ impl State {
 
                     for p in dijkstra_reach(&pos, successor_inside) {
                         // no point moving to another place inside
-                        if let PosNew::O(i) = p.node {
+                        if let PosNew::O(_) = p.node {
                             let mut next_state = next_state.clone();
 
                             next_state.map.insert(p.node, amp);
@@ -412,7 +409,7 @@ impl State {
                         }
                     }
                 }
-                PosNew::O(d) => {
+                PosNew::O(_) => {
                     let target = self.get_inside_target(amp);
 
                     if let Some(target) = target {
