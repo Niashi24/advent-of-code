@@ -16,12 +16,12 @@ impl CombinedSolver for Day3 {
         let mut enabled = true;
 
         for capture in regex.captures_iter(&all) {
-            match capture.get(0).unwrap().as_str() {
+            match &capture[0] {
                 "do()" => enabled = true,
                 "don't()" => enabled = false,
                 _ => {
-                    let a = capture.get(1).unwrap().as_str().parse::<i32>()?;
-                    let b = capture.get(2).unwrap().as_str().parse::<i32>()?;
+                    let a = capture[1].parse::<i32>()?;
+                    let b = capture[2].parse::<i32>()?;
                     p_1 += a * b;
                     if enabled {
                         p_2 += a * b;
