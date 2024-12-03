@@ -8,21 +8,25 @@ impl CombinedSolver for Day2 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let segments = input.lines().map(Result::unwrap)
             .map(|s| s.split_whitespace()
-                .map(|s| s.parse::<i32>().unwrap()).collect_vec()).collect_vec();
+                .map(|s| s.parse::<i32>().unwrap())
+                .collect_vec()
+            );
         
-        let p_1 = segments.iter().filter(|x| is_safe(x)).count();
-
-        let p_2 = segments.into_iter().map(is_safe_2).filter(|x| *x).count();
+        let mut p_1 = 0;
+        let mut p_2 = 0;
+        for segment in segments {
+            if is_safe(&segment) {
+                p_1 += 1;
+            } else if is_safe_2(segment) {
+                p_2 += 1;
+            }
+        }
         
-        Ok((p_1.to_string(), p_2.to_string()))
+        Ok((p_1.to_string(), (p_1 + p_2).to_string()))
     }
 }
 
-fn is_safe_2(mut levels: Vec<i32>) -> bool {
-    if is_safe(&levels) {
-        return true;
-    }
-    
+fn is_safe_2(mut levels: Vec<i32>) -> bool {    
     for i in 0..levels.len() {
         let removed = levels.remove(i);
         
