@@ -364,5 +364,16 @@
         }
       }
     }
+  },
+  "4-2024": {
+    "full": "data/2024/full-4-24.txt",
+    "example": {
+      "Single": {
+        "path": "data/2024/ex-4-24.txt",
+        "expected_answer": {
+          "Both": ["18", "9"]
+        }
+      }
+    }
   }
 }
