@@ -37,7 +37,9 @@ impl CombinedSolver for Day5 {
             if ordered(&update, &orderings) {
                 p_1 += update[update.len() / 2];
             } else {
-                update.sort_unstable_by(|a, b| {
+                let median_idx = update.len() / 2;
+                
+                p_2 += *update.select_nth_unstable_by(median_idx, |a, b| {
                     if orderings.get(a).is_some_and(|s| s.contains(b)) {
                         Ordering::Less
                     } else if orderings.get(b).is_some_and(|s| s.contains(a)) {
@@ -45,9 +47,7 @@ impl CombinedSolver for Day5 {
                     } else {
                         Ordering::Equal
                     }
-                });
-                
-                p_2 += update[update.len() / 2];
+                }).1;
             }
         }
         
