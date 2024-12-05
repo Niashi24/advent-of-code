@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::io::BufRead;
 use itertools::Itertools;
@@ -33,10 +34,20 @@ impl CombinedSolver for Day5 {
         let mut p_2 = 0;
         
         for mut update in updates {
-            if make_ordered(&mut update, &orderings) {
-                p_2 += update[update.len() / 2];
-            } else {
+            if ordered(&update, &orderings) {
                 p_1 += update[update.len() / 2];
+            } else {
+                update.sort_unstable_by(|a, b| {
+                    if orderings.get(a).is_some_and(|s| s.contains(b)) {
+                        Ordering::Less
+                    } else if orderings.get(b).is_some_and(|s| s.contains(a)) {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Equal
+                    }
+                });
+                
+                p_2 += update[update.len() / 2];
             }
         }
         
@@ -44,28 +55,19 @@ impl CombinedSolver for Day5 {
     }
 }
 
-fn make_ordered(update: &mut [i64], bad_orderings: &HashMap<i64, HashSet<i64>>) -> bool {
-    let mut made_changes = false;
-    while let Err((a, b)) = ordered(update, bad_orderings) {
-        update.swap(a, b);
-        made_changes = true;
-    }
-    made_changes
-}
-
-fn ordered(update: &[i64], bad_orderings: &HashMap<i64, HashSet<i64>>) -> Result<(), (usize, usize)> {
+fn ordered(update: &[i64], bad_orderings: &HashMap<i64, HashSet<i64>>) -> bool {
     for i in 0..(update.len() - 1) {
         let a = update[i];
         let Some(bad) = bad_orderings.get(&a) else {
             continue;
         };
         
-        for (j, b) in update.iter().enumerate().skip(i + 1) {
+        for b in &update[i+1..] {
             if bad.contains(b) {
-                return Err((i, j));
+                return false;
             }
         }
     }
     
-    Ok(())
+    true
 }
