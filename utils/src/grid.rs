@@ -28,20 +28,12 @@ impl<T> Grid<T> {
 
     #[allow(dead_code)]
     pub fn get_i(&self, x: i64, y: i64) -> Option<&T> {
-        if x < 0 || y < 0 {
-            None
-        } else {
-            self.get(x as usize, y as usize)
-        }
+        self.get(usize::try_from(x).ok()?, usize::try_from(y).ok()?)
     }
 
     #[allow(dead_code)]
     pub fn get_i_mut(&mut self, x: i64, y: i64) -> Option<&mut T> {
-        if x < 0 || y < 0 {
-            None
-        } else {
-            self.get_mut(x as usize, y as usize)
-        }
+        self.get_mut(usize::try_from(x).ok()?, usize::try_from(y).ok()?)
     }
 
     #[allow(dead_code)]
