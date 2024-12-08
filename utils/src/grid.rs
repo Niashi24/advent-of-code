@@ -36,6 +36,15 @@ impl<T> Grid<T> {
     }
 
     #[allow(dead_code)]
+    pub fn get_i_mut(&mut self, x: i64, y: i64) -> Option<&mut T> {
+        if x < 0 || y < 0 {
+            None
+        } else {
+            self.get_mut(x as usize, y as usize)
+        }
+    }
+
+    #[allow(dead_code)]
     pub fn get_cycle(&self, mut x: i64, mut y: i64) -> Option<&T> {
         x = x.rem_euclid(self.w as i64);
         y = y.rem_euclid(self.h as i64);
@@ -100,6 +109,7 @@ impl<T> Grid<T> {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct GridIter<'a, T> {
     grid: &'a Grid<T>,
     x: usize,
