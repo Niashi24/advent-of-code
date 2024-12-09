@@ -1,7 +1,4 @@
 use std::io::BufRead;
-use crate::day::CombinedSolver;
-
-pub struct Day9;
 
 pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<u64> {
     let line = input.lines().next().unwrap()?;
