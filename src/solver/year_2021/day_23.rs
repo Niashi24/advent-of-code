@@ -32,6 +32,7 @@ impl CombinedSolver for Day23 {
             max_depth: 1,
         };
 
+        return Ok(("".to_string(), "".to_string()));
         let (_, part_1) = astar(&state, State::successors, State::heuristic, State::success).unwrap();
 
         let (_, part_2) = astar(&state.part_2(), State::successors, State::heuristic, State::success).unwrap();
