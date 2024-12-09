@@ -46,7 +46,7 @@ pub fn add_all(solver_database: &mut SolverDatabase) {
         ),
         (
             Day::new(9, 2024),
-            Solver::Combined(Box::new(day_9::Day9)),
+            Solver::separated((day_9::part_1, day_9::part_2)),
         ),
     ];
 

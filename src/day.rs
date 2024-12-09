@@ -11,14 +11,80 @@ pub trait CombinedSolver: 'static + Sync {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)>;
 }
 
+impl<A1, A2, F> CombinedSolver for F
+where
+    A1: Display,
+    A2: Display,
+    F: Fn(Box<dyn BufRead>) -> anyhow::Result<(A1, A2)> + 'static + Sync
+{
+    fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
+        let (a, b) = self(input)?;
+        Ok((a.to_string(), b.to_string()))
+    }
+}
+
 pub trait SeparatedSolver: 'static + Sync {
     fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String>;
     fn part_2(&self, input: Box<dyn BufRead>) -> anyhow::Result<String>;
 }
 
+impl<A1, A2, F1, F2> SeparatedSolver for (F1, F2)
+where
+    A1: Display,
+    A2: Display,
+    F1: Fn(Box<dyn BufRead>) -> anyhow::Result<A1> + 'static + Sync,
+    F2: Fn(Box<dyn BufRead>) -> anyhow::Result<A2> + 'static + Sync,
+{
+    fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+        self.0(input).map(|x| x.to_string())
+    }
+
+    fn part_2(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+        self.1(input).map(|x| x.to_string())
+    }
+}
+
+impl<A, F> SeparatedSolver for (F, ())
+where
+    A: Display,
+    F: Fn(Box<dyn BufRead>) -> anyhow::Result<A> + 'static + Sync,
+{
+    fn part_1(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+        self.0(input).map(|x| x.to_string())
+    }
+
+    fn part_2(&self, _input: Box<dyn BufRead>) -> anyhow::Result<String> {
+        Ok("todo".to_string())
+    }
+}
+
+impl<A, F> SeparatedSolver for ((), F)
+where
+    A: Display,
+    F: Fn(Box<dyn BufRead>) -> anyhow::Result<A> + 'static + Sync,
+{
+    fn part_1(&self, _input: Box<dyn BufRead>) -> anyhow::Result<String> {
+        Ok("todo".to_string())
+    }
+
+    fn part_2(&self, input: Box<dyn BufRead>) -> anyhow::Result<String> {
+        self.1(input).map(|x| x.to_string())
+    }
+}
+
 pub enum Solver {
     Combined(Box<dyn CombinedSolver>),
     Separated(Box<dyn SeparatedSolver>),
+}
+
+impl Solver {
+    pub fn combined(solver: impl CombinedSolver) -> Self {
+        Self::Combined(Box::new(solver))
+    }
+    
+    pub fn separated(solver: impl SeparatedSolver) -> Self {
+        Self::Separated(Box::new(solver))
+    }
 }
 
 pub type Result = anyhow::Result<Answer>;
