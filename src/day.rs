@@ -78,10 +78,12 @@ pub enum Solver {
 }
 
 impl Solver {
+    #[inline]
     pub fn combined(solver: impl CombinedSolver) -> Self {
         Self::Combined(Box::new(solver))
     }
     
+    #[inline]
     pub fn separated(solver: impl SeparatedSolver) -> Self {
         Self::Separated(Box::new(solver))
     }
