@@ -33,7 +33,7 @@ fn stones(i: u64, remaining: u8, memo: &mut HashMap<(u64, u8), usize>) -> usize 
     }
     
     let out = if i == 0 {
-        return stones(1, remaining - 1, memo);
+        stones(1, remaining - 1, memo)
     } else {
         let digits = num_digits(i);
         if digits & 1 == 0 {
