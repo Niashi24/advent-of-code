@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::io::BufRead;
 use itertools::Itertools;
+use utils::num_digits;
 use crate::day::CombinedSolver;
 
 pub struct Day7;
@@ -41,9 +42,5 @@ fn is_ok<const P2: bool>(index: usize, current_value: u64, target: u64, equation
 }
 
 fn concat(a: u64, b: u64) -> u64 {
-    fn num_digits(n: u64) -> u32 {
-        f32::log10(n as f32) as u32 + 1
-    }
-
     a * 10u64.pow(num_digits(b)) + b
 }
