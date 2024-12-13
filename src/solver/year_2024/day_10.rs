@@ -1,9 +1,9 @@
-use std::collections::{BTreeSet, HashMap, HashSet};
-use std::fmt::Display;
-use std::io::BufRead;
 use glam::IVec2;
 use itertools::Itertools;
 use smallset::SmallSet;
+use std::collections::{HashMap, HashSet};
+use std::fmt::Display;
+use std::io::BufRead;
 use utils::grid::Grid;
 
 pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Display)> {
@@ -90,7 +90,7 @@ fn find_2(pos: IVec2, grid: &Grid<u8>, memo: &mut HashMap<IVec2, usize>) -> usiz
 
 // intended solution
 // only slightly faster because the other one can be shared between runs
-fn find_1(pos: IVec2, grid: &Grid<u8>) -> usize {
+fn _find_1(pos: IVec2, grid: &Grid<u8>) -> usize {
     let mut count = 0;
     let mut visited = HashSet::new();
 

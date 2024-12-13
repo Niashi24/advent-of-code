@@ -452,5 +452,16 @@
         }
       }
     }
+  },
+  "12-2024": {
+    "full": "data/2024/full-12-24.txt",
+    "example": {
+      "Single": {
+        "path": "data/2024/ex-12-24.txt",
+        "expected_answer": {
+          "Both": ["1930", "1206"]
+        }
+      }
+    }
   }
 }

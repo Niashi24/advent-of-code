@@ -27,12 +27,14 @@ impl CombinedSolver for Day23 {
         map.insert(P::I(IP::new(1, A::C)), chars.next().unwrap().try_into().unwrap());
         map.insert(P::I(IP::new(1, A::D)), chars.next().unwrap().try_into().unwrap());
 
+        #[allow(unused_variables)]
         let state = State {
             map,
             max_depth: 1,
         };
 
         return Ok(("".to_string(), "".to_string()));
+        #[allow(unreachable_code)]
         let (_, part_1) = astar(&state, State::successors, State::heuristic, State::success).unwrap();
 
         let (_, part_2) = astar(&state.part_2(), State::successors, State::heuristic, State::success).unwrap();
