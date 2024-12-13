@@ -85,7 +85,7 @@ fn find_2(pos: IVec2, grid: &Grid<u8>, memo: &mut HashMap<IVec2, usize>) -> usiz
     memo.insert(pos, out);
 
 
-    memo.get(&pos).unwrap().clone()
+    *memo.get(&pos).unwrap()
 }
 
 // intended solution
