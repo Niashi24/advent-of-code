@@ -40,7 +40,7 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
         }
 
         // create walls
-        let mut walls = IndexSet::new();
+        let mut walls = IndexSet::new(); // I don't really need an index set, just want a .pop() method lol
         for &p in &region.positions {
             for d in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y] {
                 let dp = p + d;
