@@ -36,6 +36,11 @@ impl<T> Grid<T> {
         self.get(usize::try_from(x).ok()?, usize::try_from(y).ok()?)
     }
 
+    #[inline]
+    pub fn get_i32_mut(&mut self, x: i32, y: i32) -> Option<&mut T> {
+        self.get_mut(usize::try_from(x).ok()?, usize::try_from(y).ok()?)
+    }
+
     #[allow(dead_code)]
     pub fn get_i_mut(&mut self, x: i64, y: i64) -> Option<&mut T> {
         self.get_mut(usize::try_from(x).ok()?, usize::try_from(y).ok()?)

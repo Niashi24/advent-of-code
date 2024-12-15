@@ -2,7 +2,6 @@ use std::fmt::Display;
 use std::io::BufRead;
 use itertools::Itertools;
 use nalgebra::matrix;
-use regex::Regex;
 
 pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Display)> {
     Ok(input.lines()
