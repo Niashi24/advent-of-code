@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::fmt::Display;
-use std::io::{stdin, stdout, BufRead};
+use std::io::{stdin, BufRead};
 use hashbrown::HashSet;
 use itertools::Itertools;
 use regex::Regex;

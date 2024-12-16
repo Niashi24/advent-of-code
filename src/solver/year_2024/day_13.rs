@@ -25,7 +25,7 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
 
             (x_1, y_1, x_2, y_2, x_p, y_p)
         })
-        .fold((0, 0), |(mut p_1, mut p_2), (x_1, y_1, x_2, y_2, x_p, y_p)| {
+        .fold((0, 0), |(p_1, p_2), (x_1, y_1, x_2, y_2, x_p, y_p)| {
             (
                 p_1 + solve_eqn(x_1, y_1, x_2, y_2, x_p, y_p).unwrap_or_default(),
                 p_2 + solve_eqn(x_1, y_1, x_2, y_2, x_p + 10000000000000, y_p + 10000000000000).unwrap_or_default(),

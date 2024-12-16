@@ -10,30 +10,28 @@ use thiserror::Error;
 
 use crate::cli::{ExampleReader, ReadersError, RunArgs, RunType, SourceReader};
 use crate::day::{Answer, Day, DayInfo, DaysMeta, Solver, SolverDatabase};
-use crate::solver::year_2024::day_14::part_2;
 
 pub mod cli;
 pub mod day;
 pub mod solver;
 
 fn main() -> anyhow::Result<()> {
-    part_2();
-    // let args = RunType::parse();
-    // let meta = parse_meta(Path::new("data/meta.json")).unwrap_or_default();
-    // 
-    // match args {
-    //     RunType::Interactive => interactive(meta),
-    //     RunType::All => {
-    //         run_all(&meta)?;
-    //     }
-    //     RunType::Args(args) => {
-    //         let result = run_from_args(args, meta);
-    //         match result {
-    //             Ok(r) => println!("{}", r),
-    //             Err(e) => println!("Err: {}", e),
-    //         }
-    //     }
-    // }
+    let args = RunType::parse();
+    let meta = parse_meta(Path::new("data/meta.json")).unwrap_or_default();
+    
+    match args {
+        RunType::Interactive => interactive(meta),
+        RunType::All => {
+            run_all(&meta)?;
+        }
+        RunType::Args(args) => {
+            let result = run_from_args(args, meta);
+            match result {
+                Ok(r) => println!("{}", r),
+                Err(e) => println!("Err: {}", e),
+            }
+        }
+    }
 
     Ok(())
 }
