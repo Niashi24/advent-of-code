@@ -1,9 +1,9 @@
-use std::collections::BTreeMap;
-use std::io::BufRead;
+use crate::day::CombinedSolver;
 use itertools::Itertools;
 use pathfinding::prelude::{astar, dijkstra, dijkstra_reach};
-use smallvec::{SmallVec, smallvec};
-use crate::day::CombinedSolver;
+use smallvec::{smallvec, SmallVec};
+use std::collections::BTreeMap;
+use std::io::BufRead;
 
 pub struct Day23;
 
@@ -11,34 +11,61 @@ impl CombinedSolver for Day23 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut lines = input.lines().map(Result::unwrap);
         let mut map = BTreeMap::new();
-        use PosNew as P;
         use Amphipod as A;
+        use PosNew as P;
 
         let line = lines.nth(2).unwrap();
         let mut chars = line.chars().filter(|c| *c != '#');
-        map.insert(P::I(IP::new(0, A::A)), chars.next().unwrap().try_into().unwrap());
-        map.insert(P::I(IP::new(0, A::B)), chars.next().unwrap().try_into().unwrap());
-        map.insert(P::I(IP::new(0, A::C)), chars.next().unwrap().try_into().unwrap());
-        map.insert(P::I(IP::new(0, A::D)), chars.next().unwrap().try_into().unwrap());
+        map.insert(
+            P::I(IP::new(0, A::A)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
+        map.insert(
+            P::I(IP::new(0, A::B)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
+        map.insert(
+            P::I(IP::new(0, A::C)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
+        map.insert(
+            P::I(IP::new(0, A::D)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
         let line = lines.next().unwrap();
         let mut chars = line.chars().filter(|c| *c != '#' && *c != ' ');
-        map.insert(P::I(IP::new(1, A::A)), chars.next().unwrap().try_into().unwrap());
-        map.insert(P::I(IP::new(1, A::B)), chars.next().unwrap().try_into().unwrap());
-        map.insert(P::I(IP::new(1, A::C)), chars.next().unwrap().try_into().unwrap());
-        map.insert(P::I(IP::new(1, A::D)), chars.next().unwrap().try_into().unwrap());
+        map.insert(
+            P::I(IP::new(1, A::A)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
+        map.insert(
+            P::I(IP::new(1, A::B)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
+        map.insert(
+            P::I(IP::new(1, A::C)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
+        map.insert(
+            P::I(IP::new(1, A::D)),
+            chars.next().unwrap().try_into().unwrap(),
+        );
 
         #[allow(unused_variables)]
-        let state = State {
-            map,
-            max_depth: 1,
-        };
+        let state = State { map, max_depth: 1 };
 
         return Ok(("".to_string(), "".to_string()));
         #[allow(unreachable_code)]
-        let (_, part_1) = astar(&state, State::successors, State::heuristic, State::success).unwrap();
+        let (_, part_1) =
+            astar(&state, State::successors, State::heuristic, State::success).unwrap();
 
-        let (_, part_2) = astar(&state.part_2(), State::successors, State::heuristic, State::success).unwrap();
-
+        let (_, part_2) = astar(
+            &state.part_2(),
+            State::successors,
+            State::heuristic,
+            State::success,
+        )
+        .unwrap();
 
         Ok((part_1.to_string(), part_2.to_string()))
     }
@@ -52,8 +79,8 @@ enum PosNew {
 
 impl PosNew {
     fn distance(self, other: Self) -> usize {
-        use PosNew as P;
         use Amphipod as A;
+        use PosNew as P;
         match (self, other) {
             (P::O(OU(1)), P::O(OU(2))) => 1,
             (P::O(OU(1)), P::O(OU(3))) => 3,
@@ -111,53 +138,151 @@ impl PosNew {
             (P::O(OU(7)), P::I(IP { depth, amp: A::C })) => 5 + depth as usize,
             (P::O(OU(7)), P::I(IP { depth, amp: A::D })) => 3 + depth as usize,
 
-            (P::I(IP { depth: d_1, amp: a_1 }), P::I(IP { depth: d_2, amp: a_2 })) if a_1 == a_2 => d_1.abs_diff(d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: a_1,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: a_2,
+                }),
+            ) if a_1 == a_2 => d_1.abs_diff(d_2) as usize,
 
-            (P::I(IP { depth: d_1, amp: A::A }), P::I(IP { depth: d_2, amp: A::B })) => 4 + (d_1 + d_2) as usize,
-            (P::I(IP { depth: d_1, amp: A::A }), P::I(IP { depth: d_2, amp: A::C })) => 6 + (d_1 + d_2) as usize,
-            (P::I(IP { depth: d_1, amp: A::A }), P::I(IP { depth: d_2, amp: A::D })) => 8 + (d_1 + d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: A::A,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: A::B,
+                }),
+            ) => 4 + (d_1 + d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: A::A,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: A::C,
+                }),
+            ) => 6 + (d_1 + d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: A::A,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: A::D,
+                }),
+            ) => 8 + (d_1 + d_2) as usize,
 
-            (P::I(IP { depth: d_1, amp: A::B }), P::I(IP { depth: d_2, amp: A::C })) => 4 + (d_1 + d_2) as usize,
-            (P::I(IP { depth: d_1, amp: A::B }), P::I(IP { depth: d_2, amp: A::D })) => 6 + (d_1 + d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: A::B,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: A::C,
+                }),
+            ) => 4 + (d_1 + d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: A::B,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: A::D,
+                }),
+            ) => 6 + (d_1 + d_2) as usize,
 
-            (P::I(IP { depth: d_1, amp: A::C }), P::I(IP { depth: d_2, amp: A::D })) => 4 + (d_1 + d_2) as usize,
+            (
+                P::I(IP {
+                    depth: d_1,
+                    amp: A::C,
+                }),
+                P::I(IP {
+                    depth: d_2,
+                    amp: A::D,
+                }),
+            ) => 4 + (d_1 + d_2) as usize,
 
             _ if self == other => 0,
 
-            _ => other.distance(self)
+            _ => other.distance(self),
         }
     }
 
     fn neighbors(&self, max_depth: u8) -> SmallVec<[(Self, usize); 4]> {
-        use PosNew as P;
         use Amphipod as A;
+        use PosNew as P;
         // #############
         // #12.3.4.5.67#
         // ###2#2#2#2###
         //   #1#1#1#1#
         //   #########
         match *self {
-            P::O(i) => {
-                match i {
-                    OU(1) => smallvec![(P::O(OU(2)), 1)],
-                    OU(2) => smallvec![(P::O(OU(1)), 1), (P::O(OU(3)), 2), (P::I(IP::new(0, A::A)), 2)],
-                    OU(3) => smallvec![(P::O(OU(2)), 2), (P::O(OU(4)), 2), (P::I(IP::new(0, A::A)), 2), (P::I(IP::new(0, A::B)), 2)],
-                    OU(4) => smallvec![(P::O(OU(3)), 2), (P::O(OU(5)), 2), (P::I(IP::new(0, A::B)), 2), (P::I(IP::new(0, A::C)), 2)],
-                    OU(5) => smallvec![(P::O(OU(4)), 2), (P::O(OU(6)), 2), (P::I(IP::new(0, A::C)), 2), (P::I(IP::new(0, A::D)), 2)],
-                    OU(6) => smallvec![(P::O(OU(7)), 1), (P::O(OU(5)), 2), (P::I(IP::new(0, A::D)), 2)],
-                    OU(7) => smallvec![(P::O(OU(6)), 1)],
+            P::O(i) => match i {
+                OU(1) => smallvec![(P::O(OU(2)), 1)],
+                OU(2) => smallvec![
+                    (P::O(OU(1)), 1),
+                    (P::O(OU(3)), 2),
+                    (P::I(IP::new(0, A::A)), 2)
+                ],
+                OU(3) => smallvec![
+                    (P::O(OU(2)), 2),
+                    (P::O(OU(4)), 2),
+                    (P::I(IP::new(0, A::A)), 2),
+                    (P::I(IP::new(0, A::B)), 2)
+                ],
+                OU(4) => smallvec![
+                    (P::O(OU(3)), 2),
+                    (P::O(OU(5)), 2),
+                    (P::I(IP::new(0, A::B)), 2),
+                    (P::I(IP::new(0, A::C)), 2)
+                ],
+                OU(5) => smallvec![
+                    (P::O(OU(4)), 2),
+                    (P::O(OU(6)), 2),
+                    (P::I(IP::new(0, A::C)), 2),
+                    (P::I(IP::new(0, A::D)), 2)
+                ],
+                OU(6) => smallvec![
+                    (P::O(OU(7)), 1),
+                    (P::O(OU(5)), 2),
+                    (P::I(IP::new(0, A::D)), 2)
+                ],
+                OU(7) => smallvec![(P::O(OU(6)), 1)],
 
-                    _ => panic!("{}", i.0),
-                }
-            }
-            P::I(IP { depth: 0, amp }) => {
-                match amp {
-                    Amphipod::A => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(2)), 2), (P::O(OU(3)), 2)],
-                    Amphipod::B => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(3)), 2), (P::O(OU(4)), 2)],
-                    Amphipod::C => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(4)), 2), (P::O(OU(5)), 2)],
-                    Amphipod::D => smallvec![(P::I(IP::new(1, amp)), 1), (P::O(OU(5)), 2), (P::O(OU(6)), 2)],
-                }
-            }
+                _ => panic!("{}", i.0),
+            },
+            P::I(IP { depth: 0, amp }) => match amp {
+                Amphipod::A => smallvec![
+                    (P::I(IP::new(1, amp)), 1),
+                    (P::O(OU(2)), 2),
+                    (P::O(OU(3)), 2)
+                ],
+                Amphipod::B => smallvec![
+                    (P::I(IP::new(1, amp)), 1),
+                    (P::O(OU(3)), 2),
+                    (P::O(OU(4)), 2)
+                ],
+                Amphipod::C => smallvec![
+                    (P::I(IP::new(1, amp)), 1),
+                    (P::O(OU(4)), 2),
+                    (P::O(OU(5)), 2)
+                ],
+                Amphipod::D => smallvec![
+                    (P::I(IP::new(1, amp)), 1),
+                    (P::O(OU(5)), 2),
+                    (P::O(OU(6)), 2)
+                ],
+            },
             P::I(x) => {
                 let mut out = SmallVec::new();
 
@@ -185,7 +310,7 @@ impl PosNew {
     //         }
     //         _ => other.path(self)
     //     }
-    // 
+    //
     // }
 }
 
@@ -197,17 +322,11 @@ struct IP {
 
 impl IP {
     pub fn new(depth: u8, amp: Amphipod) -> Self {
-        Self {
-            depth,
-            amp,
-        }
+        Self { depth, amp }
     }
 
     pub fn depth(self, depth: u8) -> Self {
-        Self {
-            depth,
-            ..self
-        }
+        Self { depth, ..self }
     }
 }
 
@@ -236,8 +355,6 @@ struct OU(u8);
 //   #1#1#1#1#
 //   #########
 
-
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 enum Amphipod {
     A,
@@ -247,12 +364,7 @@ enum Amphipod {
 }
 
 impl Amphipod {
-    const ALL: [Self; 4] = [
-        Amphipod::A,
-        Amphipod::B,
-        Amphipod::C,
-        Amphipod::D,
-    ];
+    const ALL: [Self; 4] = [Amphipod::A, Amphipod::B, Amphipod::C, Amphipod::D];
 
     fn energy(&self) -> usize {
         match self {
@@ -264,8 +376,8 @@ impl Amphipod {
     }
 
     fn get_room(&self, depth: u8) -> PosNew {
-        use PosNew as P;
         use Amphipod as A;
+        use PosNew as P;
         match self {
             A::A => P::I(IP::new(depth, *self)),
             A::B => P::I(IP::new(depth, *self)),
@@ -318,8 +430,8 @@ struct State {
 
 impl State {
     fn part_2(mut self) -> Self {
-        use PosNew as P;
         use Amphipod as A;
+        use PosNew as P;
 
         self.max_depth = 3;
         let a = self.map.remove(&P::I(IP::new(1, A::A))).unwrap();
@@ -345,7 +457,8 @@ impl State {
     }
 
     fn get_inside_target(&self, amphipod: Amphipod) -> Option<PosNew> {
-        let mut positions = (0..=self.max_depth).rev()
+        let mut positions = (0..=self.max_depth)
+            .rev()
             .map(|i| PosNew::I(IP::new(i, amphipod)))
             .map(|p| (p, self.map.get(&p)));
 
@@ -373,8 +486,6 @@ impl State {
         }
     }
 
-
-
     fn successors(&self) -> Vec<(Self, usize)> {
         let mut out = Vec::new();
         for (&pos, &amp) in &self.map {
@@ -392,15 +503,15 @@ impl State {
                                 match p {
                                     // can move inside if still inside initial
                                     // or color matches
-                                    PosNew::I(i) => (i.amp == ip.amp && i.depth > ip.depth) || i.amp == amp,
+                                    PosNew::I(i) => {
+                                        (i.amp == ip.amp && i.depth > ip.depth) || i.amp == amp
+                                    }
                                     // can always move anywhere outside
                                     PosNew::O(_) => true,
                                 }
                             })
                             .collect_vec()
                     };
-                    
-                    
 
                     for p in dijkstra_reach(&pos, successor_inside) {
                         // no point moving to another place inside
@@ -421,11 +532,9 @@ impl State {
                                 .into_iter()
                                 // .map(|(p, c)| (p, c * amp.1.energy()))
                                 .filter(|(p, _)| next_state.map.get(p).is_none())
-                                .filter(|&(p, _)| {
-                                    match p {
-                                        PosNew::I(ip) => ip.amp == amp,
-                                        PosNew::O(_) => true,
-                                    }
+                                .filter(|&(p, _)| match p {
+                                    PosNew::I(ip) => ip.amp == amp,
+                                    PosNew::O(_) => true,
                                 })
                                 .collect_vec()
                         };
@@ -447,7 +556,8 @@ impl State {
     }
 
     fn heuristic(&self) -> usize {
-        self.map.iter()
+        self.map
+            .iter()
             .map(|(&p, &a)| p.distance(a.get_room(0)) * a.energy())
             .sum()
     }
@@ -456,10 +566,10 @@ impl State {
         use Amphipod as A;
         (0..=self.max_depth)
             .flat_map(|i| A::ALL.map(|a| (i, a)))
-            .all(|(i, amp)| self.map.get(&PosNew::I(IP::new(i, amp)))
-                .is_some_and(|a| *a == amp))
+            .all(|(i, amp)| {
+                self.map
+                    .get(&PosNew::I(IP::new(i, amp)))
+                    .is_some_and(|a| *a == amp)
+            })
     }
 }
-
-
-

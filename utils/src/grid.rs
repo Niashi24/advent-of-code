@@ -30,7 +30,7 @@ impl<T> Grid<T> {
     pub fn get_i(&self, x: i64, y: i64) -> Option<&T> {
         self.get(usize::try_from(x).ok()?, usize::try_from(y).ok()?)
     }
-    
+
     #[inline]
     pub fn get_i32(&self, x: i32, y: i32) -> Option<&T> {
         self.get(usize::try_from(x).ok()?, usize::try_from(y).ok()?)
@@ -176,11 +176,7 @@ impl<T> IntoIterator for Grid<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         Self::IntoIter {
-            grid: self
-                .grid
-                .into_iter()
-                .map(VecDeque::from)
-                .collect(),
+            grid: self.grid.into_iter().map(VecDeque::from).collect(),
             x: 0,
             y: 0,
         }

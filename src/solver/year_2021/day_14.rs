@@ -49,10 +49,7 @@ fn solve(initial: &[u8], rules: &[Rule], t: u8, memo: &mut Memo) -> usize {
         }
     }
 
-    let (min, max) = counts.into_values()
-        .minmax()
-        .into_option()
-        .unwrap();
+    let (min, max) = counts.into_values().minmax().into_option().unwrap();
 
     max - min
 }

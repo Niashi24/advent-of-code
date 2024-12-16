@@ -5,21 +5,21 @@ pub trait Action<T> {
 }
 
 pub fn backtracking<S, A, FN, IN, FS>(start: S, mut successors: FN, mut success: FS) -> Option<S>
-    where
-        A: Action<S>,
-        FN: FnMut(&S) -> IN,
-        IN: IntoIterator<Item=A>,
-        FS: FnMut(&S) -> bool,
+where
+    A: Action<S>,
+    FN: FnMut(&S) -> IN,
+    IN: IntoIterator<Item = A>,
+    FS: FnMut(&S) -> bool,
 {
     step(start, &mut successors, &mut success).ok()
 }
 
 fn step<S, A, FN, IN, FS>(mut state: S, successors: &mut FN, success: &mut FS) -> Result<S, S>
-    where
-        A: Action<S>,
-        FN: FnMut(&S) -> IN,
-        IN: IntoIterator<Item=A>,
-        FS: FnMut(&S) -> bool,
+where
+    A: Action<S>,
+    FN: FnMut(&S) -> IN,
+    IN: IntoIterator<Item = A>,
+    FS: FnMut(&S) -> bool,
 {
     for action in successors(&state) {
         if !action.is_valid(&state) {
@@ -36,19 +36,25 @@ fn step<S, A, FN, IN, FS>(mut state: S, successors: &mut FN, success: &mut FS) -
                 state = action.undo(s);
                 continue;
             }
-            Ok(x) => { return Ok(x); }
+            Ok(x) => {
+                return Ok(x);
+            }
         }
     }
 
     Err(state)
 }
 
-pub fn backtracking_iterative<S, A, FN, IN, FS>(start: S, mut successors: FN, mut success: FS) -> Option<S>
-    where
-        A: Action<S>,
-        FN: FnMut(&S) -> IN,
-        IN: IntoIterator<Item=A>,
-        FS: FnMut(&S) -> bool,
+pub fn backtracking_iterative<S, A, FN, IN, FS>(
+    start: S,
+    mut successors: FN,
+    mut success: FS,
+) -> Option<S>
+where
+    A: Action<S>,
+    FN: FnMut(&S) -> IN,
+    IN: IntoIterator<Item = A>,
+    FS: FnMut(&S) -> bool,
 {
     let mut actions_to_apply_stack = vec![successors(&start).into_iter()];
     let mut applied_action_stack: Vec<A> = vec![];

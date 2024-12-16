@@ -1,32 +1,36 @@
+use crate::day::CombinedSolver;
+use itertools::{Either, Itertools};
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
-use itertools::{Either, Itertools};
 use utils::grid::Grid;
-use crate::day::CombinedSolver;
 
 pub struct Day25;
 
 impl CombinedSolver for Day25 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
-        let grid: Grid<Cell> = input.lines().map(Result::unwrap)
-            .map(|l| l.chars()
-                .map(|c| match c {
-                    'v' => Cell(Some(Dir::South)),
-                    '>' => Cell(Some(Dir::East)),
-                    '.' => Cell(None),
-                    _ => panic!("{c}")
-                }).collect_vec())
+        let grid: Grid<Cell> = input
+            .lines()
+            .map(Result::unwrap)
+            .map(|l| {
+                l.chars()
+                    .map(|c| match c {
+                        'v' => Cell(Some(Dir::South)),
+                        '>' => Cell(Some(Dir::East)),
+                        '.' => Cell(None),
+                        _ => panic!("{c}"),
+                    })
+                    .collect_vec()
+            })
             .collect();
-        
+
         let part_1 = part_1(grid.clone());
-        
+
         Ok((part_1.to_string(), "".to_string()))
     }
 }
 
-#[derive(Copy, Clone)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 enum Dir {
     East,
     South,
@@ -39,14 +43,14 @@ impl Dir {
             Dir::South => false,
         }
     }
-    
+
     fn is_south(&self) -> bool {
         match self {
             Dir::East => false,
             Dir::South => true,
         }
     }
-    
+
     fn step(&self, (x, y): (usize, usize), grid: &Grid<Cell>) -> (usize, usize) {
         match self {
             Dir::East => {
@@ -65,7 +69,7 @@ impl Dir {
             }
         }
     }
-    
+
     fn unstep(&self, (x, y): (usize, usize), grid: &Grid<Cell>) -> (usize, usize) {
         match self {
             Dir::East => {
@@ -91,44 +95,47 @@ struct Cell(Option<Dir>);
 
 impl Display for Cell {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self.0 {
-            Some(Dir::East) => '>',
-            Some(Dir::South) => 'v',
-            None => '.',
-        })
+        write!(
+            f,
+            "{}",
+            match self.0 {
+                Some(Dir::East) => '>',
+                Some(Dir::South) => 'v',
+                None => '.',
+            }
+        )
     }
 }
 
 fn part_1(mut grid: Grid<Cell>) -> usize {
     // #[derive(PartialEq, Eq, Hash, Copy, Clone)]
     // struct State((u64, u64), usize);
-    // 
+    //
     // impl Ord for State {
     //     fn cmp(&self, other: &Self) -> Ordering {
     //         self.1.cmp(&other.1)
     //             .then(self.0.cmp(&other.0))
     //     }
     // }
-    // 
+    //
     // impl PartialOrd for State {
     //     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
     //         Some(self.cmp(other))
     //     }
     // }
-    
-    let (mut east_queue, mut south_queue) = grid.iter()
+
+    let (mut east_queue, mut south_queue) = grid
+        .iter()
         .filter_map(|(p, c)| c.0.as_ref().map(|d| (*d, p)))
         .filter(|&(d, p)| {
             let p = d.step(p, &grid);
             grid.get(p.0, p.1).unwrap().0.is_none()
         })
-        .partition_map::<Vec<_>, Vec<_>, _, _, _>(|(d, p)| {
-            match d {
-                Dir::East => Either::Left(p),
-                Dir::South => Either::Right(p),
-            }
+        .partition_map::<Vec<_>, Vec<_>, _, _, _>(|(d, p)| match d {
+            Dir::East => Either::Left(p),
+            Dir::South => Either::Right(p),
         });
-    
+
     east_queue.retain(|&p| {
         let n = Dir::East.step(p, &grid);
         grid.get(n.0, n.1).unwrap().0.is_none()
@@ -137,20 +144,20 @@ fn part_1(mut grid: Grid<Cell>) -> usize {
         let n = Dir::South.step(p, &grid);
         grid.get(n.0, n.1).unwrap().0.is_none()
     });
-    
+
     let mut to_move = Movers {
         east: east_queue.into_iter().collect(),
         south: south_queue.into_iter().collect(),
     };
-    
+
     let mut candidates = Movers::default();
-    
+
     let mut counter = 1;
     while !to_move.east.is_empty() || !to_move.south.is_empty() {
         step(&mut to_move, &mut candidates, &mut grid);
         counter += 1;
     }
-    
+
     counter
 }
 
@@ -182,7 +189,7 @@ fn part_1(mut grid: Grid<Cell>) -> usize {
 #[derive(Default, Debug, Clone)]
 struct Movers {
     pub east: HashSet<(usize, usize)>,
-    pub south: HashSet<(usize, usize)>
+    pub south: HashSet<(usize, usize)>,
 }
 
 fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
@@ -193,7 +200,12 @@ fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
             candidates.east.insert(b);
         }
         let be = Dir::South.unstep(p, grid);
-        if grid.get(be.0, be.1).unwrap().0.is_some_and(|d| d.is_south()) {
+        if grid
+            .get(be.0, be.1)
+            .unwrap()
+            .0
+            .is_some_and(|d| d.is_south())
+        {
             to_move.south.insert(be);
         }
 
@@ -201,7 +213,7 @@ fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
         grid.get_mut(n.0, n.1).unwrap().0 = Some(Dir::East);
         candidates.east.insert(n);
     }
-    
+
     for p in to_move.south.drain() {
         let n = Dir::South.step(p, &grid);
         let b = Dir::South.unstep(p, &grid);
@@ -220,7 +232,7 @@ fn step(to_move: &mut Movers, candidates: &mut Movers, grid: &mut Grid<Cell>) {
             candidates.south.insert(n);
         }
     }
-    
+
     for p in candidates.east.drain() {
         let n = Dir::East.step(p, grid);
         if grid.get(n.0, n.1).unwrap().0.is_none() {

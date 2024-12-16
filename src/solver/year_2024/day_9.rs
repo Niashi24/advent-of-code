@@ -2,9 +2,7 @@ use std::io::BufRead;
 
 pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<u64> {
     let line = input.lines().next().unwrap()?;
-    let input = line
-        .chars()
-        .map(|c| c.to_digit(10).unwrap());
+    let input = line.chars().map(|c| c.to_digit(10).unwrap());
 
     let mut blocks = Vec::new();
     let mut free = false;
@@ -39,17 +37,18 @@ pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<u64> {
         }
     }
 
-    Ok(blocks.iter().copied().enumerate()
+    Ok(blocks
+        .iter()
+        .copied()
+        .enumerate()
         .map(|(i, n)| i as u64 * n.unwrap_or_default() as u64)
         .sum::<u64>())
 }
 
 pub fn part_2(input: Box<dyn BufRead>) -> anyhow::Result<u64> {
     let line = input.lines().next().unwrap()?;
-    let input = line
-        .chars()
-        .map(|c| c.to_digit(10).unwrap());
-    
+    let input = line.chars().map(|c| c.to_digit(10).unwrap());
+
     let mut blocks = Vec::new();
     let mut free = false;
     let mut i = 0;
@@ -104,6 +103,6 @@ pub fn part_2(input: Box<dyn BufRead>) -> anyhow::Result<u64> {
             i += length;
         }
     }
-    
+
     Ok(p_2)
 }

@@ -7,10 +7,11 @@ use std::io::BufRead;
 use utils::grid::Grid;
 
 pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Display)> {
-    let grid: Grid<char> = input.lines()
+    let grid: Grid<char> = input
+        .lines()
         .map(|l| l.unwrap().chars().collect_vec())
         .collect();
-    
+
     let mut visited = HashSet::new();
     let mut p_1 = 0;
     let mut p_2 = 0;
@@ -19,9 +20,9 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
         if visited.contains(&pos) {
             continue;
         }
-        
+
         let mut region = Region::new(c);
-        
+
         // flood fill
         let mut to_visit = vec![pos];
         while let Some(p) = to_visit.pop() {
@@ -30,9 +31,8 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
             }
             visited.insert(p);
             region.push(p);
-            
-            for next in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y]
-                .map(|x| x + p) {
+
+            for next in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y].map(|x| x + p) {
                 if grid.get_i32(next.x, next.y).is_some_and(|x| c == *x) {
                     to_visit.push(next);
                 }
@@ -74,10 +74,10 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
                 }
             }
         }
-        
+
         p_2 += region.positions.len() * count;
     }
-    
+
     Ok((p_1, p_2))
 }
 
@@ -100,7 +100,7 @@ impl Wall {
             ..self
         }
     }
-    
+
     fn right(self) -> Self {
         Self {
             center: self.center + IVec2::new(-self.normal.y, self.normal.x),
@@ -116,7 +116,7 @@ impl Region {
             positions: vec![],
         }
     }
-    
+
     pub fn push(&mut self, p: IVec2) {
         self.positions.push(p);
     }

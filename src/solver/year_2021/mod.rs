@@ -1,5 +1,6 @@
 use crate::day::{Day, Solver, SolverDatabase};
 
+pub mod day_1;
 pub mod day_10;
 pub mod day_11;
 pub mod day_12;
@@ -10,8 +11,13 @@ pub mod day_16;
 pub mod day_17;
 pub mod day_18;
 pub mod day_19;
-pub mod day_1;
 pub mod day_2;
+mod day_20;
+mod day_21;
+mod day_22;
+mod day_23;
+mod day_24;
+mod day_25;
 pub mod day_3;
 pub mod day_4;
 pub mod day_5;
@@ -19,51 +25,18 @@ pub mod day_6;
 pub mod day_7;
 pub mod day_8;
 pub mod day_9;
-mod day_20;
-mod day_21;
-mod day_22;
-mod day_23;
-mod day_24;
-mod day_25;
 
 pub fn add_all(solver_database: &mut SolverDatabase) {
     let solvers = vec![
-        (
-            Day::new(1, 2021),
-            Solver::Separated(Box::new(day_1::Day1)),
-        ),
-        (
-            Day::new(2, 2021),
-            Solver::Separated(Box::new(day_2::Day2)),
-        ),
-        (
-            Day::new(3, 2021),
-            Solver::Combined(Box::new(day_3::Day3)),
-        ),
-        (
-            Day::new(4, 2021),
-            Solver::Combined(Box::new(day_4::Day4)),
-        ),
-        (
-            Day::new(5, 2021),
-            Solver::Combined(Box::new(day_5::Day5)),
-        ),
-        (
-            Day::new(6, 2021),
-            Solver::Combined(Box::new(day_6::Day6)),
-        ),
-        (
-            Day::new(7, 2021),
-            Solver::Combined(Box::new(day_7::Day7)),
-        ),
-        (
-            Day::new(8, 2021),
-            Solver::Separated(Box::new(day_8::Day8)),
-        ),
-        (
-            Day::new(9, 2021),
-            Solver::Combined(Box::new(day_9::Day9)),
-        ),
+        (Day::new(1, 2021), Solver::Separated(Box::new(day_1::Day1))),
+        (Day::new(2, 2021), Solver::Separated(Box::new(day_2::Day2))),
+        (Day::new(3, 2021), Solver::Combined(Box::new(day_3::Day3))),
+        (Day::new(4, 2021), Solver::Combined(Box::new(day_4::Day4))),
+        (Day::new(5, 2021), Solver::Combined(Box::new(day_5::Day5))),
+        (Day::new(6, 2021), Solver::Combined(Box::new(day_6::Day6))),
+        (Day::new(7, 2021), Solver::Combined(Box::new(day_7::Day7))),
+        (Day::new(8, 2021), Solver::Separated(Box::new(day_8::Day8))),
+        (Day::new(9, 2021), Solver::Combined(Box::new(day_9::Day9))),
         (
             Day::new(10, 2021),
             Solver::Separated(Box::new(day_10::Day10)),

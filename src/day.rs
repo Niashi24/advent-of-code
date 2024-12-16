@@ -15,7 +15,7 @@ impl<A1, A2, F> CombinedSolver for F
 where
     A1: Display,
     A2: Display,
-    F: Fn(Box<dyn BufRead>) -> anyhow::Result<(A1, A2)> + 'static + Sync
+    F: Fn(Box<dyn BufRead>) -> anyhow::Result<(A1, A2)> + 'static + Sync,
 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let (a, b) = self(input)?;
@@ -82,7 +82,7 @@ impl Solver {
     pub fn combined(solver: impl CombinedSolver) -> Self {
         Self::Combined(Box::new(solver))
     }
-    
+
     #[inline]
     pub fn separated(solver: impl SeparatedSolver) -> Self {
         Self::Separated(Box::new(solver))

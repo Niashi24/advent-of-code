@@ -7,12 +7,16 @@ use std::io::BufRead;
 use utils::grid::Grid;
 
 pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Display)> {
-    let grid: Grid<u8> = input.lines()
-        .map(|l| l.unwrap().chars()
-            .map(|c| c.to_digit(10).unwrap() as u8)
-            .collect_vec())
+    let grid: Grid<u8> = input
+        .lines()
+        .map(|l| {
+            l.unwrap()
+                .chars()
+                .map(|c| c.to_digit(10).unwrap() as u8)
+                .collect_vec()
+        })
         .collect();
-    
+
     let mut p_1 = 0;
     let mut p_2 = 0;
     let mut memo_1 = HashMap::new();
@@ -21,13 +25,13 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
         if v != 0 {
             continue;
         }
-        
+
         // p_1 += find_1(IVec2::new(x as i32, y as i32), &grid);
-        
+
         p_1 += find(IVec2::new(x as i32, y as i32), &grid, &mut memo_1).len();
         p_2 += find_2(IVec2::new(x as i32, y as i32), &grid, &mut memo_2);
     }
-    
+
     Ok((p_1, p_2))
 }
 
@@ -41,22 +45,26 @@ fn find(pos: IVec2, grid: &Grid<u8>, memo: &mut HashMap<IVec2, Storage>) -> Stor
     let cur = *grid.get_i32(pos.x, pos.y).unwrap();
     if cur == 9 {
         memo.insert(pos, Storage::from_iter([pos]));
-        
+
         return memo.get(&pos).unwrap().clone();
     }
-    
+
     let mut out = Storage::new();
-    
-    for p in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y].into_iter()
+
+    for p in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y]
+        .into_iter()
         .map(|p| p + pos)
-        .filter(|p| grid.get_i32(p.x, p.y).copied()
-            .is_some_and(|v| (v) == cur + 1)) {
-        
+        .filter(|p| {
+            grid.get_i32(p.x, p.y)
+                .copied()
+                .is_some_and(|v| (v) == cur + 1)
+        })
+    {
         for &p in find(p, grid, memo).iter() {
             out.insert(p);
         }
     }
-    
+
     memo.insert(pos, out);
 
     memo.get(&pos).unwrap().clone()
@@ -74,16 +82,19 @@ fn find_2(pos: IVec2, grid: &Grid<u8>, memo: &mut HashMap<IVec2, usize>) -> usiz
 
     let mut out = 0;
 
-    for p in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y].into_iter()
+    for p in [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y]
+        .into_iter()
         .map(|p| p + pos)
-        .filter(|p| grid.get_i32(p.x, p.y).copied()
-            .is_some_and(|v| (v) == cur + 1)) {
-        
+        .filter(|p| {
+            grid.get_i32(p.x, p.y)
+                .copied()
+                .is_some_and(|v| (v) == cur + 1)
+        })
+    {
         out += find_2(p, grid, memo);
     }
 
     memo.insert(pos, out);
-
 
     *memo.get(&pos).unwrap()
 }
@@ -106,10 +117,16 @@ fn _find_1(pos: IVec2, grid: &Grid<u8>) -> usize {
             continue;
         }
 
-        to_visit.extend([IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y].into_iter()
-            .map(|p| p + pos)
-            .filter(|p| grid.get_i32(p.x, p.y).copied()
-                .is_some_and(|v| (v) == cur + 1)));
+        to_visit.extend(
+            [IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y]
+                .into_iter()
+                .map(|p| p + pos)
+                .filter(|p| {
+                    grid.get_i32(p.x, p.y)
+                        .copied()
+                        .is_some_and(|v| (v) == cur + 1)
+                }),
+        );
     }
 
     count

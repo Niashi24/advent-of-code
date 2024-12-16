@@ -1,6 +1,6 @@
-use std::io::{BufRead, Read};
-use regex::Regex;
 use crate::day::CombinedSolver;
+use regex::Regex;
+use std::io::{BufRead, Read};
 
 pub struct Day3;
 
@@ -8,9 +8,9 @@ impl CombinedSolver for Day3 {
     fn solve(&self, mut input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
         let mut all = String::new();
         input.read_to_string(&mut all)?;
-        
+
         let regex = Regex::new(r#"mul\((\d+),(\d+)\)|do\(\)|don't\(\)"#)?;
-        
+
         let mut p_1 = 0;
         let mut p_2 = 0;
         let mut enabled = true;
@@ -29,7 +29,7 @@ impl CombinedSolver for Day3 {
                 }
             }
         }
-        
+
         Ok((p_1.to_string(), p_2.to_string()))
     }
 }

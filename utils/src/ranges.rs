@@ -1,4 +1,4 @@
-﻿use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter};
 use std::ops::Range;
 
 use itertools::Itertools;
@@ -6,7 +6,7 @@ use itertools::Itertools;
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RangeD<const N: usize> {
     pub start: [i64; N],
-    pub end: [i64; N]
+    pub end: [i64; N],
 }
 
 impl<'a, const N: usize> IntoIterator for &'a RangeD<N> {
@@ -20,9 +20,15 @@ impl<'a, const N: usize> IntoIterator for &'a RangeD<N> {
 
 impl<const N: usize> Display for RangeD<N> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({})", self.start.iter().zip(self.end.iter()).map(|(s,e)| {
-            format!("{s}..{e}")
-        }).join(", "))
+        write!(
+            f,
+            "({})",
+            self.start
+                .iter()
+                .zip(self.end.iter())
+                .map(|(s, e)| { format!("{s}..{e}") })
+                .join(", ")
+        )
     }
 }
 
@@ -33,17 +39,17 @@ impl<const N: usize> RangeD<N> {
             end: ranges.clone().map(|x| x.end),
         }
     }
-    
+
     pub fn offset(&mut self, offset: i64) {
         self.start.iter_mut().for_each(|i| *i += offset);
         self.end.iter_mut().for_each(|i| *i += offset);
     }
-    
+
     // pub fn offset_neg(&mut self, offset: usize) {
     //     self.start.iter_mut().for_each(|i| *i -= offset);
     //     self.end.iter_mut().for_each(|i| *i -= offset);
     // }
-    
+
     pub fn offset_component(&mut self, i: usize, offset: i64) {
         self.start[i] += offset;
         self.end[i] += offset;
@@ -53,26 +59,27 @@ impl<const N: usize> RangeD<N> {
     //     self.start[i] -= offset;
     //     self.end[i] -= offset;
     // }
-    
+
     pub fn volume(&self) -> i64 {
-        self.start.iter().zip(self.end.iter()).map(|(s, e)| e - s).product()
+        self.start
+            .iter()
+            .zip(self.end.iter())
+            .map(|(s, e)| e - s)
+            .product()
     }
-    
+
     pub fn intersect(&self, other: &Self) -> Option<Self> {
         // if !self.intersects(other) { return None; }
-        
+
         let mut start = [0; N];
         let mut end = [0; N];
         for i in 0..N {
             start[i] = self.start[i].max(other.start[i]);
             end[i] = self.end[i].min(other.end[i]);
         }
-        
+
         if start.iter().zip(end.iter()).all(|(s, e)| s < e) {
-            Some(Self {
-                start,
-                end
-            })
+            Some(Self { start, end })
         } else {
             None
         }
@@ -82,7 +89,9 @@ impl<const N: usize> RangeD<N> {
         let mut result = Vec::new();
 
         // Check if there is no intersection.
-        if self.start.iter().zip(&other.end).any(|(s, e)| s >= e) || self.end.iter().zip(&other.start).any(|(e, s)| e <= s) {
+        if self.start.iter().zip(&other.end).any(|(s, e)| s >= e)
+            || self.end.iter().zip(&other.start).any(|(e, s)| e <= s)
+        {
             result.push(self.clone());
             return result;
         }
@@ -107,21 +116,19 @@ impl<const N: usize> RangeD<N> {
 
         result
     }
-    
+
     pub fn intersects(&self, other: &Self) -> bool {
         fn contains_simple<const N: usize>(a: &RangeD<N>, b: &RangeD<N>) -> bool {
-            (0..N).all(|i| {
-                a.start[i] <= b.start[i] && b.start[i] < a.end[i]
-            })
+            (0..N).all(|i| a.start[i] <= b.start[i] && b.start[i] < a.end[i])
         }
-        
+
         contains_simple::<N>(self, other) || contains_simple::<N>(other, self)
     }
-    
+
     pub fn len_d(&self, i: usize) -> i64 {
         self.end[i] - self.start[i]
     }
-    
+
     pub fn iter(&self) -> RangeDIterator<N> {
         RangeDIterator::new(self)
     }
@@ -153,14 +160,14 @@ fn difference_1d() {
 
 pub struct RangeDIterator<'a, const N: usize> {
     ranges: &'a RangeD<N>,
-    values: [i64; N]
+    values: [i64; N],
 }
 
 impl<'a, const N: usize> RangeDIterator<'a, N> {
     pub fn new(range: &'a RangeD<N>) -> Self {
         Self {
             ranges: range,
-            values: range.start
+            values: range.start,
         }
     }
 }
@@ -173,7 +180,7 @@ impl<'a, const N: usize> Iterator for RangeDIterator<'a, N> {
             return None;
         }
         let item = self.values;
-        
+
         let mut i = N - 1;
         self.values[i] += 1;
         while i != 0 && self.values[i] == self.ranges.end[i] {
@@ -185,4 +192,3 @@ impl<'a, const N: usize> Iterator for RangeDIterator<'a, N> {
         Some(item)
     }
 }
-

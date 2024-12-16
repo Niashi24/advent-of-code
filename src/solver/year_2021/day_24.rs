@@ -1,22 +1,31 @@
+use crate::day::CombinedSolver;
+use itertools::Itertools;
+use smallvec::SmallVec;
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use std::io::BufRead;
 use std::str::FromStr;
-use itertools::Itertools;
-use smallvec::SmallVec;
-use crate::day::CombinedSolver;
 
 pub struct Day24;
 
 impl CombinedSolver for Day24 {
     fn solve(&self, input: Box<dyn BufRead>) -> anyhow::Result<(String, String)> {
-        let instructions = input.lines().map(Result::unwrap)
+        let instructions = input
+            .lines()
+            .map(Result::unwrap)
             .map(|l| Instruction::from_str(&l))
-            .collect::<Result<Vec<_>, _>>().unwrap();
-
+            .collect::<Result<Vec<_>, _>>()
+            .unwrap();
 
         let mut memo = Failed::new();
-        let part_1 = solve(Memory::default(), 0, ModelNumber::new(), &instructions, &mut memo).unwrap();
+        let part_1 = solve(
+            Memory::default(),
+            0,
+            ModelNumber::new(),
+            &instructions,
+            &mut memo,
+        )
+        .unwrap();
         let part_1 = part_1.into_iter().join("");
 
         Ok((part_1, "".to_string()))
@@ -33,7 +42,11 @@ struct Memory {
 
 impl Display for Memory {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[w: {}, x: {}, y: {}, z: {}]", self.w, self.x, self.y, self.z)
+        write!(
+            f,
+            "[w: {}, x: {}, y: {}, z: {}]",
+            self.w, self.x, self.y, self.z
+        )
     }
 }
 
@@ -43,7 +56,7 @@ impl Memory {
             Register::W => self.w,
             Register::X => self.x,
             Register::Y => self.y,
-            Register::Z => self.z   ,
+            Register::Z => self.z,
         }
     }
 
@@ -59,7 +72,10 @@ impl Memory {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 enum Register {
-    W, X, Y, Z
+    W,
+    X,
+    Y,
+    Z,
 }
 
 impl FromStr for Register {
@@ -71,7 +87,7 @@ impl FromStr for Register {
             "x" => Ok(Self::X),
             "y" => Ok(Self::Y),
             "z" => Ok(Self::Z),
-            _ => Err(format!("unknown register: {:?}", s))
+            _ => Err(format!("unknown register: {:?}", s)),
         }
     }
 }
@@ -107,7 +123,7 @@ impl FromStr for OType {
             "div" => Ok(Self::Div),
             "mod" => Ok(Self::Mod),
             "eql" => Ok(Self::Eql),
-            _ => Err(format!("unknown op: {:?}", s))
+            _ => Err(format!("unknown op: {:?}", s)),
         }
     }
 }
@@ -202,24 +218,25 @@ type ModelNumber = SmallVec<[u8; 14]>;
 
 type Failed = HashSet<(Memory, usize)>;
 
-fn solve(mut state: Memory, mut i: usize, cur: ModelNumber, instructions: &[Instruction], failed: &mut Failed) -> Option<ModelNumber> {
+fn solve(
+    mut state: Memory,
+    mut i: usize,
+    cur: ModelNumber,
+    instructions: &[Instruction],
+    failed: &mut Failed,
+) -> Option<ModelNumber> {
     // unsafe { total += 1; }
     // if failed.contains(&(state, i)) {
     //     unsafe { hit += 1}
     //     return None;
     // }
 
-
     // dbg!(failed.len());
 
     loop {
         match instructions.get(i) {
             None => {
-                return if state.z == 0 {
-                    Some(cur)
-                } else {
-                    None
-                };
+                return if state.z == 0 { Some(cur) } else { None };
             }
             Some(&op) => {
                 match op {

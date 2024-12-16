@@ -1,9 +1,9 @@
 use crate::day::SeparatedSolver;
-use utils::grid::Grid;
 use itertools::Itertools;
 use smallvec::SmallVec;
 use std::collections::HashSet;
 use std::io::BufRead;
+use utils::grid::Grid;
 
 pub struct Day11;
 

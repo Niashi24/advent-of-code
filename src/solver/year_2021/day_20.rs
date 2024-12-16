@@ -14,9 +14,11 @@ impl CombinedSolver for Day20 {
         let line = lines.next().unwrap();
         let algorithm = line.chars().map(|c| c == '#').collect_vec();
         lines.next(); // ignore empty line
-        let map: Map = lines.enumerate()
+        let map: Map = lines
+            .enumerate()
             .flat_map(|(y, s)| {
-                s.chars().enumerate()
+                s.chars()
+                    .enumerate()
                     .filter(|(_, c)| *c == '#')
                     .map(|(x, _)| IVec2::new(x as i32, y as i32))
                     .collect_vec()
@@ -35,7 +37,6 @@ impl CombinedSolver for Day20 {
             complex_solver(&algorithm, map, 25)
         };
 
-
         Ok((part_1.to_string(), part_2.to_string()))
     }
 }
@@ -53,15 +54,25 @@ fn simple_solver(algorithm: &[bool], mut map: Map, n: usize) -> usize {
 }
 
 fn simple_step(algorithm: &[bool], mut map: Map, mut buffer: Map) -> (Map, Map) {
-    let (min_x, max_x) = map.iter().copied().map(|v| v.x).minmax().into_option().unwrap();
-    let (min_y, max_y) = map.iter().copied().map(|v| v.y).minmax().into_option().unwrap();
+    let (min_x, max_x) = map
+        .iter()
+        .copied()
+        .map(|v| v.x)
+        .minmax()
+        .into_option()
+        .unwrap();
+    let (min_y, max_y) = map
+        .iter()
+        .copied()
+        .map(|v| v.y)
+        .minmax()
+        .into_option()
+        .unwrap();
 
     for y in (min_y - 1)..=(max_y + 1) {
         for x in (min_x - 1)..=(max_x + 1) {
             let p = IVec2::new(x, y);
-            let i = from_bits(NINE.into_iter()
-                .map(|n| n + p)
-                .map(|p| map.contains(&p)));
+            let i = from_bits(NINE.into_iter().map(|n| n + p).map(|p| map.contains(&p)));
 
             if algorithm[i] {
                 buffer.insert(p);
@@ -85,16 +96,27 @@ fn complex_solver(algorithm: &[bool], mut map: Map, n: usize) -> usize {
 }
 
 fn flash_step(algorithm: &[bool], mut map: Map, mut buffer: Map) -> (Map, Map) {
-    let (min_x, max_x) = map.iter().copied().map(|v| v.x).minmax().into_option().unwrap();
-    let (min_y, max_y) = map.iter().copied().map(|v| v.y).minmax().into_option().unwrap();
+    let (min_x, max_x) = map
+        .iter()
+        .copied()
+        .map(|v| v.x)
+        .minmax()
+        .into_option()
+        .unwrap();
+    let (min_y, max_y) = map
+        .iter()
+        .copied()
+        .map(|v| v.y)
+        .minmax()
+        .into_option()
+        .unwrap();
 
     for y in (min_y - 1)..=(max_y + 1) {
         for x in (min_x - 1)..=(max_x + 1) {
             let p = IVec2::new(x, y);
-            let i = from_bits(NINE.into_iter()
-                .map(|n| n + p)
-                .map(|p| p.x < min_x || p.x > max_x || p.y < min_y || p.y > max_y ||
-                    (map.contains(&(p)))));
+            let i = from_bits(NINE.into_iter().map(|n| n + p).map(|p| {
+                p.x < min_x || p.x > max_x || p.y < min_y || p.y > max_y || (map.contains(&(p)))
+            }));
 
             if algorithm[i] {
                 buffer.insert(p);
@@ -108,7 +130,7 @@ fn flash_step(algorithm: &[bool], mut map: Map, mut buffer: Map) -> (Map, Map) {
     (map, buffer)
 }
 
-fn from_bits(it: impl IntoIterator<Item=bool>) -> usize {
+fn from_bits(it: impl IntoIterator<Item = bool>) -> usize {
     let mut out = 0;
     for b in it {
         out <<= 1;

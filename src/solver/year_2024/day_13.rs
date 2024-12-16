@@ -1,26 +1,43 @@
-use std::fmt::Display;
-use std::io::BufRead;
 use itertools::Itertools;
 use nalgebra::matrix;
+use std::fmt::Display;
+use std::io::BufRead;
 
 pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Display)> {
-    Ok(input.lines()
+    Ok(input
+        .lines()
         .map(Result::unwrap)
-        .chunks(4).into_iter()
+        .chunks(4)
+        .into_iter()
         .map(|mut c| {
             let b_1 = c.next().unwrap();
             let b_p = b_1.split_once(", Y+").unwrap();
-            let x_1 = b_p.0.strip_prefix("Button A: X+").unwrap().parse::<i64>().unwrap();
+            let x_1 = b_p
+                .0
+                .strip_prefix("Button A: X+")
+                .unwrap()
+                .parse::<i64>()
+                .unwrap();
             let y_1 = b_p.1.parse::<i64>().unwrap();
-            
+
             let b_2 = c.next().unwrap();
             let b_p = b_2.split_once(", Y+").unwrap();
-            let x_2 = b_p.0.strip_prefix("Button B: X+").unwrap().parse::<i64>().unwrap();
+            let x_2 = b_p
+                .0
+                .strip_prefix("Button B: X+")
+                .unwrap()
+                .parse::<i64>()
+                .unwrap();
             let y_2 = b_p.1.parse::<i64>().unwrap();
 
             let prize = c.next().unwrap();
             let b_p = prize.split_once(", Y=").unwrap();
-            let x_p = b_p.0.strip_prefix("Prize: X=").unwrap().parse::<i64>().unwrap();
+            let x_p = b_p
+                .0
+                .strip_prefix("Prize: X=")
+                .unwrap()
+                .parse::<i64>()
+                .unwrap();
             let y_p = b_p.1.parse::<i64>().unwrap();
 
             (x_1, y_1, x_2, y_2, x_p, y_p)
@@ -28,7 +45,15 @@ pub fn solve(input: Box<dyn BufRead>) -> anyhow::Result<(impl Display, impl Disp
         .fold((0, 0), |(p_1, p_2), (x_1, y_1, x_2, y_2, x_p, y_p)| {
             (
                 p_1 + solve_eqn(x_1, y_1, x_2, y_2, x_p, y_p).unwrap_or_default(),
-                p_2 + solve_eqn(x_1, y_1, x_2, y_2, x_p + 10000000000000, y_p + 10000000000000).unwrap_or_default(),
+                p_2 + solve_eqn(
+                    x_1,
+                    y_1,
+                    x_2,
+                    y_2,
+                    x_p + 10000000000000,
+                    y_p + 10000000000000,
+                )
+                .unwrap_or_default(),
             )
         }))
 }

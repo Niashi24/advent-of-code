@@ -16,10 +16,7 @@ impl CombinedSolver for Day12 {
             let (a, b) = s.split_once("-").unwrap();
             (Node::from(a), Node::from(b))
         }) {
-            graph
-                .entry(a.clone())
-                .or_default()
-                .push(b.clone());
+            graph.entry(a.clone()).or_default().push(b.clone());
             graph.entry(b).or_default().push(a);
         }
 

@@ -18,7 +18,7 @@ pub mod solver;
 fn main() -> anyhow::Result<()> {
     let args = RunType::parse();
     let meta = parse_meta(Path::new("data/meta.json")).unwrap_or_default();
-    
+
     match args {
         RunType::Interactive => interactive(meta),
         RunType::All => {
@@ -153,7 +153,11 @@ impl Display for Part {
 // Run only part 2 (example and full)
 // Run both part 1 and 2
 fn run_from_args(args: RunArgs, meta: DaysMeta) -> Result<RunResult, RunError> {
-    let RunArgs { day, source, part: _ } = args;
+    let RunArgs {
+        day,
+        source,
+        part: _,
+    } = args;
 
     let Some(solver) = SolverDatabase::global().get_solver(&day) else {
         return Err(RunError::NoSolver(day));
