@@ -2,31 +2,13 @@ use glam::IVec2;
 use itertools::Itertools;
 use std::fmt::Display;
 use std::io::BufRead;
+use utils::direction::Direction;
 use utils::grid::Grid;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 enum Tile {
     Wall,
     Box,
-}
-
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum Direction {
-    North,
-    East,
-    South,
-    West,
-}
-
-impl Direction {
-    pub fn y_down(self) -> IVec2 {
-        match self {
-            Direction::North => IVec2::NEG_Y,
-            Direction::East => IVec2::X,
-            Direction::South => IVec2::Y,
-            Direction::West => IVec2::NEG_X,
-        }
-    }
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
