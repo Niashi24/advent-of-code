@@ -507,5 +507,16 @@
         }
       }
     }
+  },
+  "17-2024": {
+    "full": "data/2024/full-17-24.txt",
+    "example": {
+      "Multi": {
+        "path_1": "data/2024/ex-17-24.txt",
+        "expected_answer_1": "4,6,3,5,6,3,5,2,1,0",
+        "path_2": "data/2024/ex-17-2-24.txt",
+        "expected_answer_2": "117440"
+      }
+    }
   }
 }
