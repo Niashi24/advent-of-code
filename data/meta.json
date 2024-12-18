@@ -525,7 +525,7 @@
       "Single": {
         "path": "data/2024/ex-18-24.txt",
         "expected_answer": {
-          "P1": "22"
+          "Both": ["22","6,1"]
         }
       }
     }
