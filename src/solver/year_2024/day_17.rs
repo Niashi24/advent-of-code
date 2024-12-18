@@ -1,5 +1,6 @@
 use std::fmt::Display;
 use std::io::BufRead;
+use std::mem::swap;
 use std::ops::Range;
 use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
@@ -300,4 +301,140 @@ c = ...000
 // b = 8 * k + 4
 
  */
+
+#[test]
+fn part_2_hope() {
+    let mut map = HashMap::new();
+    const O: Option<bool> = Some(false);
+    const I: Option<bool> = Some(true);
+    const N: Option<bool> = None;
+    
+    map.insert(0, vec![
+        vec![I, I, I, I, O, O],
+        vec![O, O, O, N, O, I, I],
+        vec![O, O, I, N, N, O, I, O],
+        vec![O, I, O, N, N, N, O, O, I],
+        vec![O, I, I, N, N, N, N, O, O, O],
+    ]);
+    map.insert(1, vec![
+        vec![I, I, O, I, O, O],
+        vec![O, O, I, N, O, I, I],
+        vec![O, O, O, N, N, O, I, O],
+        vec![O, I, I, N, N, N, O, O, I],
+        vec![O, I, O, N, N, N, N, O, O, O],
+    ]);
+    map.insert(2, vec![
+        vec![I,I,I,O],
+        vec![I,O,I,I,O,O],
+        vec![O,I,O,N,O,I,I],
+        vec![O, I, I, N, N, O, I, O],
+        vec![O, O, O, N, N, N, O, O, I],
+        vec![O, O, I, N, N, N, N, O, O, O],
+    ]);
+    map.insert(3, vec![
+        vec![I, I, I],
+        vec![I, O, I, O, I],
+        vec![I, O, O, I, O, O],
+        vec![O, I, I, N, O, I, I],
+        vec![O, I, O, N, N, O, I, O],
+        vec![O, O, I, N, N, N, O, O, I],
+        vec![O, O, O, N, N, N, N, O, O, O],
+    ]);
+    map.insert(4, vec![
+        vec![O, I, I, I, O, O],
+        vec![I, O, O, N, O, I, I],
+        vec![I, O, I, N, N, O, I, O],
+        vec![I, I, O, N, N, N, O, O, I],
+        vec![I, I, I, N, N, N, N, O, O, O],
+    ]);
+    map.insert(5, vec![
+        vec![O, I, I, O, I],
+        vec![O, I, O, I, O, O],
+        vec![I, O, I, N, O, I, I],
+        vec![I, O, O, N, N, O, I, O],
+        vec![I, I, I, N, N, N, O, O, I],
+        vec![I, I, O, N, N, N, N, O, O, O],
+    ]);
+    map.insert(7, vec![
+        vec![O, O, I, O, I],
+        vec![O, O, O, I, O, O],
+        vec![I, I, I, N, O, I, I],
+        vec![I, I, O, N, N, O, I, O],
+        vec![I, O, I, N, N, N, O, O, I],
+        vec![I, O, O, N, N, N, N, O, O, O],
+    ]);
+    
+    let sequence = vec![0, 3, 3, 0, 5, 5, 4, 1, 1, 4, 5, 7, 7, 1, 4, 2];
+    let mut sequence = sequence.into_iter();
+    let mut current = map.get(&sequence.next().unwrap()).unwrap().clone();
+    // let mut next = Vec::new();
+    while let Some(i) = sequence.next() {
+        let is = map.get(&i).unwrap();
+        current = current.into_iter()
+            .flat_map(|s| {
+                is.clone().into_iter()
+                    .filter_map(move |x| merge(s.clone(), x))
+            })
+            .collect_vec();
+    }
+    
+    let p_2 = current.into_iter()
+        .map(|s| to_min_u128(s))
+        .min().unwrap();
+    dbg!(p_2);    
+}
+
+fn merge(mut a: Vec<Option<bool>>, mut b: Vec<Option<bool>>) -> Option<Vec<Option<bool>>> {
+    let z = b.pop().unwrap();
+    let y = b.pop().unwrap();
+    let x = b.pop().unwrap();
+    if b.len() > a.len() {
+        swap(&mut a, &mut b);
+    }
+
+    let s = a.len() - b.len();
+    let mut b = b.into_iter();
+
+    for i in s..a.len() {
+        let x = a[i];
+        let y = b.next().unwrap();
+        a[i] = match (x, y) {
+            (None, x) | (x, None) => x,
+            (Some(true), Some(true)) => Some(true),
+            (Some(false), Some(false)) => Some(false),
+            (_, _) => { return None },
+        }
+    }
+    
+    a.extend([x, y, z]);
+
+    Some(a)
+}
+
+fn to_min_u128(a: Vec<Option<bool>>) -> u128 {
+    a.into_iter()
+        .fold(0, |acc, i| {
+            (acc << 1) + i.unwrap_or_default() as u128
+        })
+}
+
+#[test]
+fn test_merge() {
+
+    const O: Option<bool> = Some(false);
+    const I: Option<bool> = Some(true);
+    const N: Option<bool> = None;
+    
+    let a = vec![N, I, I, O, O];
+    let b =    vec![O, I, I, N, O, I, I];
+    assert_eq!(merge(a, b), None);
+
+    let a = vec![N, I, I, O, O];
+    let b =    vec![N, I, N, N, O, I, I];
+    assert_eq!(merge(a, b), Some(vec![N, I, I, O, O, O, I, I]));
+
+    let a =    vec![N, I, I, O, O];
+    let b = vec![I, N, N, I, N, N, O, I, I];
+    assert_eq!(merge(a, b), Some(vec![I, N, I, I, O, O, O, I, I]));
+}
 
