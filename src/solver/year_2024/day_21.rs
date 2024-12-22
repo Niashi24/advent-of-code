@@ -70,8 +70,6 @@ enum Direction {
     A = 0,
 }
 
-// type Transitions = SmallVec<[SmallVec<[Direction; 3]>; 2]>;
-
 impl Direction {
     fn transition_path(a: Self, b: Self) -> SmallVec<[Direction; 3]> {
         use Direction as D;
@@ -106,13 +104,7 @@ impl Direction {
     }
     
     fn reverse(self) -> Self {
-        match self {
-            Direction::Up => Direction::Down,
-            Direction::Left => Direction::Right,
-            Direction::Down => Direction::Up,
-            Direction::Right => Direction::Left,
-            Direction::A => Direction::A,
-        }
+        unsafe { std::mem::transmute(-(self as i8)) }
     }
 }
 
