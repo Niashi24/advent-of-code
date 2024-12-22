@@ -137,7 +137,7 @@ fn test_out() {
     dbg!(solve("980A", depth));
     dbg!(solve("179A", depth));
     dbg!(solve("456A", depth));
-    dbg!(solve("379A", depth));
+    dbg!(solve("379A", depth)); //todo: this one gives 68 when it should give 64
 }
 
 /*
