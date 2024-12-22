@@ -73,7 +73,7 @@ enum Direction {
 // type Transitions = SmallVec<[SmallVec<[Direction; 3]>; 2]>;
 
 impl Direction {
-    fn transition(a: Self, b: Self) -> SmallVec<[Direction; 3]> {
+    fn transition_path(a: Self, b: Self) -> SmallVec<[Direction; 3]> {
         use Direction as D;
         match (a, b) {
             (a, b) if a == b => smallvec![],
@@ -101,7 +101,7 @@ impl Direction {
             // (D::A, D::Left) => smallvec![D::Down, D::Left, D::Left],
             // (D::A, D::Right) => smallvec![D::Down],
             // (D::A, D::Down) => smallvec![D::Down, D::Left], // multiple
-            _ => Self::transition(b, a).into_iter().rev().map(Direction::reverse).collect(),
+            _ => Self::transition_path(b, a).into_iter().rev().map(Direction::reverse).collect(),
         }
     }
     
@@ -143,24 +143,7 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[Direction; 5]> {
         out.push(Direction::Down);
     }
     
-    println!("{} -> {}: {:?}", a, b, out);
-    
     out
-}
-
-impl TryFrom<char> for Direction {
-    type Error = char;
-
-    fn try_from(value: char) -> Result<Self, Self::Error> {
-        match value {
-            '<' => Ok(Direction::Left),
-            '>' => Ok(Direction::Right),
-            '^' => Ok(Direction::Up),
-            'v' => Ok(Direction::Down),
-            'A' => Ok(Direction::A),
-            _ => Err(value),
-        }
-    }
 }
 
 fn solve(seq: &str, depth: usize) -> u64 {
@@ -195,30 +178,6 @@ fn solve(seq: &str, depth: usize) -> u64 {
     out
 }
 
-#[test]
-fn test_out() {
-    let depth = 2;
-    dbg!(solve("029A", depth));
-    dbg!(solve("980A", depth));
-    dbg!(solve("179A", depth));
-    dbg!(solve("456A", depth));
-    dbg!(solve("379A", depth));
-    // dbg!(solve("869A", depth) * 869 +
-    //     solve("170A", depth) * 170 +
-    //     solve("319A", depth) * 319 +
-    //     solve("349A", depth) * 349 +
-    //     solve("489A", depth) * 489);
-    
-    // let base = "A^^^<Av>A^AvvvA".chars().map(|c| Direction::try_from(c).unwrap()).collect_vec();
-    // 
-    // 
-    // let mut out = 0;
-    // for (a, b) in base.iter().copied().tuple_windows() {
-    //     out += recursive(a, b, 25);
-    // }
-    // dbg!(out);
-}
-
 #[memoize]
 fn recursive(a: Direction, b: Direction, depth: usize) -> u64 {
     if depth == 0 {
@@ -227,7 +186,7 @@ fn recursive(a: Direction, b: Direction, depth: usize) -> u64 {
     
     let mut out = 0;
     let mut current = Direction::A;
-    let transitions = Direction::transition(a, b);
+    let transitions = Direction::transition_path(a, b);
     // println!("{:?} -> {:?}:\n   {:?}", a, b, transitions);
     for d in transitions {
         out += recursive(current, d, depth - 1);
@@ -239,6 +198,16 @@ fn recursive(a: Direction, b: Direction, depth: usize) -> u64 {
     // println!("   {out}");
     
     out
+}
+
+#[test]
+fn test_out() {
+    let depth = 2;
+    dbg!(solve("029A", depth));
+    dbg!(solve("980A", depth));
+    dbg!(solve("179A", depth));
+    dbg!(solve("456A", depth));
+    dbg!(solve("379A", depth));
 }
 
 /*
