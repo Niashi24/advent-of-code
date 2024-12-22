@@ -14,48 +14,7 @@ pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<impl Display> {
         .sum::<u64>();
     let p_2 = sequences.iter()
         .map(|s| s.strip_suffix("A").unwrap().parse::<u64>().unwrap() * solve(s, 25))
-        .sum::<u64>();
-    // let p_1 = {
-    //     let mut p_1 = 0;
-    // 
-    //     for seq in &sequences {
-    //         let path = bfs(&State::<Part1>::default(), |s| {
-    //             let mut out = Vec::with_capacity(5);
-    //             out.extend([IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y]
-    //                 .into_iter()
-    //                 .filter_map(|dir| s.clone().mv(dir)));
-    //             out.extend(s.clone().confirm(seq));
-    // 
-    //             out
-    //         }, |s| s.success(seq)).unwrap();
-    // 
-    //         p_1 += (path.len() - 1) * seq.strip_suffix("A").unwrap().parse::<usize>()?;
-    //     }
-    //     
-    //     p_1
-    // };
-    // 
-    // let p_2 = {
-    //     let mut p_2 = 0;
-    // 
-    //     for seq in &sequences {
-    //         let path = bfs(&State::<Part2>::default(), |s| {
-    //             let mut out = Vec::with_capacity(5);
-    //             out.extend([IVec2::X, IVec2::Y, IVec2::NEG_X, IVec2::NEG_Y]
-    //                 .into_iter()
-    //                 .filter_map(|dir| s.clone().mv(dir)));
-    //             out.extend(s.clone().confirm(seq));
-    // 
-    //             out
-    //         }, |s| s.success(seq)).unwrap();
-    // 
-    //         p_2 += dbg!((path.len() - 1)) * seq.strip_suffix("A").unwrap().parse::<usize>()?;
-    //     }
-    //     
-    //     p_2
-    // };
-    
-    
+        .sum::<u64>();    
     
     Ok(p_1)
 }
@@ -81,24 +40,14 @@ impl Direction {
             (D::Up, D::A) => smallvec![D::Right],
             
             (D::Left, D::Down) => smallvec![D::Right],
-            // (D::Left, D::Up) => smallvec![D::Right, D::Up],
             (D::Left, D::Right) => smallvec![D::Right, D::Right],
             (D::Left, D::A) => smallvec![D::Right, D::Right, D::Up],
             
-            // (D::Down, D::Up) => smallvec![D::Up],
-            // (D::Down, D::Left) => smallvec![D::Left],
             (D::Down, D::Right) => smallvec![D::Right],
             (D::Down, D::A) => smallvec![D::Up, D::Right], // multiple
             
-            // (D::Right, D::Up) => smallvec![D::Up, D::Left], // multiple
-            // (D::Right, D::Left) => smallvec![D::Left, D::Left],
-            // (D::Right, D::Down) => smallvec![D::Left],
             (D::Right, D::A) => smallvec![D::Up],
-            // (D::A, D::Up) => smallvec![D::Left],
             
-            // (D::A, D::Left) => smallvec![D::Down, D::Left, D::Left],
-            // (D::A, D::Right) => smallvec![D::Down],
-            // (D::A, D::Down) => smallvec![D::Down, D::Left], // multiple
             _ => Self::transition_path(b, a).into_iter().rev().map(Direction::reverse).collect(),
         }
     }
@@ -107,17 +56,6 @@ impl Direction {
         unsafe { std::mem::transmute(-(self as i8)) }
     }
 }
-
-enum Numeric {
-    Num(u8),
-    A,
-}
-
-// impl Numeric {
-//     fn transition(a: Self, b: Self) -> SmallVec<[Direction; 5]> {
-//         
-//     }
-// }
 
 fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[Direction; 5]> {
     let mut out = SmallVec::new();
