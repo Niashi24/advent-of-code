@@ -562,5 +562,16 @@
         }
       }
     }
+  },
+  "22-2024": {
+    "full": "data/2024/full-22-24.txt",
+    "example": {
+      "Multi": {
+        "path_1": "data/2024/ex-22-1-24.txt",
+        "expected_answer_1": "37327623",
+        "path_2": "data/2024/ex-22-2-24.txt",
+        "expected_answer_2": "23"
+      }
+    }
   }
 }
