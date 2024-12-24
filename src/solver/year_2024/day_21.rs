@@ -32,6 +32,7 @@ enum Direction {
 }
 
 impl Direction {
+    // paths to go from position a to position b
     fn transition_path(a: Self, b: Self) -> SmallVec<[SmallVec<[Direction; 3]>; 3]> {
         use Direction as D;
         match (a, b) {
@@ -67,6 +68,7 @@ impl Direction {
     }
 }
 
+// all the different ways to go to each input, includes the A presses
 fn all_transitions(inputs: impl Iterator<Item=IVec2>) -> Vec<Vec<Direction>> {
     let mut out = vec![vec![]];
     let mut current = IVec2::new(2, 3);
@@ -87,11 +89,8 @@ fn all_transitions(inputs: impl Iterator<Item=IVec2>) -> Vec<Vec<Direction>> {
     out
 }
 
-fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>; 2]> {
-    if a == b {
-        return smallvec![];
-    }
-    
+// the different paths to get from position a to position b
+fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>; 2]> {    
     match (a.x.cmp(&b.x), a.y.cmp(&b.y)) {
         (Ordering::Equal, Ordering::Equal) => smallvec![smallvec![]],
         (Ordering::Equal, Ordering::Greater) => smallvec![smallvec![Direction::Up; (a.y - b.y) as usize]],
@@ -152,25 +151,7 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>;
 
             out
         },
-        // _ => todo!(),
     }
-    
-    // let mut out = SmallVec::new();
-    // 
-    // for _ in a.x..b.x {
-    //     out.push(Direction::Right);
-    // }
-    // for _ in b.y..a.y {
-    //     out.push(Direction::Up);
-    // }
-    // for _ in b.x..a.x {
-    //     out.push(Direction::Left);
-    // }
-    // for _ in a.y..b.y {
-    //     out.push(Direction::Down);
-    // }
-    // 
-    // out
 }
 
 // fn bfs_numeric(directions: &[Direction], a: IVec2, b: IVec2) -> SmallVec<[Direction; 5]> {
@@ -178,9 +159,6 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>;
 // }
 
 fn solve(seq: &str, depth: usize) -> u64 {
-    // println!("{seq}");
-    let mut current = IVec2::new(2, 3);
-    let mut out = 0;
     let all_transitions = all_transitions(
         seq.chars().map(|c| IVec2::from(match c {
             '7' => [0, 0],
@@ -210,54 +188,6 @@ fn solve(seq: &str, depth: usize) -> u64 {
             out
         })
         .min().unwrap();
-    
-    // for c in seq.chars() {
-    //     let x = IVec2::from(match c {
-    //         '7' => [0, 0],
-    //         '8' => [1, 0],
-    //         '9' => [2, 0],
-    //         '4' => [0, 1],
-    //         '5' => [1, 1],
-    //         '6' => [2, 1],
-    //         '1' => [0, 2],
-    //         '2' => [1, 2],
-    //         '3' => [2, 2],
-    //         '0' => [1, 3],
-    //         'A' => [2, 3],
-    //         x => panic!("{x:?}"),
-    //     });
-    //     
-    //     let before = out;
-    //     
-    //     let mut c = Direction::A;
-    //     let transitions = numeric_transition(current, x);
-    //     // println!("    {:?} -> {:?}: {:?}", current.to_array(), x.to_array(), transitions);
-    //     let a = {
-    //         let mut out = out;
-    //         for &x in &transitions {
-    //             out += recursive(c, x, depth);
-    //             c = x;
-    //         }
-    //         out += recursive(c, Direction::A, depth);
-    //         out
-    //     };
-    //     let b = {
-    //         100000
-    //         // let mut out = out;
-    //         // for x in transitions.into_iter().rev() {
-    //         //     out += recursive(c, x, depth);
-    //         //     c = x;
-    //         // }
-    //         // out += recursive(c, Direction::A, depth);
-    //         // out
-    //     };
-    //     
-    //     out = a.min(b);
-    //     
-    //     // println!("  {}", out - before);
-    //     
-    //     current = x;
-    // }
     
     println!("{seq}: {out}");
     
@@ -338,18 +268,18 @@ fn recursive(a: Direction, b: Direction, depth: usize) -> u64 {
         return 1;
     }
     
-    // let mut out = 0;
-    // let mut current = Direction::A;
     let transitions = Direction::transition_path(a, b);
     // println!("{:?} -> {:?}:\n   {:?}", a, b, transitions);
     let out = transitions.into_iter()
         .map(|transitions| {
             let mut out = 0;
             let mut current = Direction::A;
+            // move to button
             for d in transitions {
                 out += recursive(current, d, depth - 1);
                 current = d;
             }
+            // push button
             out += recursive(current, Direction::A, depth - 1);
             out
         })
@@ -358,16 +288,6 @@ fn recursive(a: Direction, b: Direction, depth: usize) -> u64 {
     println!("{:?} -> {:?} @ {}: {}", a, b, depth, out);
     
     out
-}
-
-#[test]
-fn test_out() {
-    let depth = 2;
-    dbg!(solve("029A", depth));
-    dbg!(solve("980A", depth));
-    dbg!(solve("179A", depth));
-    dbg!(solve("456A", depth));
-    dbg!(solve("379A", depth)); //todo: this one gives 68 when it should give 64
 }
 
 /*
