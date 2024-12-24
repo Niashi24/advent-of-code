@@ -573,5 +573,16 @@
         "expected_answer_2": "23"
       }
     }
+  },
+  "23-2024": {
+    "full": "data/2024/full-23-24.txt",
+    "example": {
+      "Single": {
+        "path": "data/2024/ex-23-24.txt",
+        "expected_answer": {
+          "Both": ["7", "co,de,ka,ta"]
+        }
+      }
+    }
   }
 }
