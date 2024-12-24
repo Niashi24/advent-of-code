@@ -102,7 +102,7 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>;
             let mut right_down = smallvec![];
             right_down.extend(vec![Direction::Right; (a.x - b.x).abs() as usize]);
             right_down.extend(vec![Direction::Down; (a.y - b.y).abs() as usize]);
-            if b.y != 3 {
+            if b.y != 3 || a.x != 0 {
                 let mut down_right = right_down.clone();
                 down_right.reverse();
                 out.push(down_right);
@@ -116,7 +116,7 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>;
             let mut up_left = smallvec![];
             up_left.extend(vec![Direction::Up; (a.y - b.y).abs() as usize]);
             up_left.extend(vec![Direction::Left; (a.x - b.x).abs() as usize]);
-            if a.y != 3 { // can move left first
+            if a.y != 3 || b.x != 0 { // can move left first
                 let mut left_up = up_left.clone();
                 left_up.reverse();
                 out.push(left_up);
@@ -130,7 +130,7 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>;
             let mut left_down = smallvec![];
             left_down.extend(vec![Direction::Left; (a.x - b.x).abs() as usize]);
             left_down.extend(vec![Direction::Down; (a.y - b.y).abs() as usize]);
-            if b.y != 3 { // can move down first
+            if b.y != 3 || a.x != 0 { // can move down first
                 let mut down_left = left_down.clone();
                 down_left.reverse();
                 out.push(down_left);
@@ -153,10 +153,6 @@ fn numeric_transition(a: IVec2, b: IVec2) -> SmallVec<[SmallVec<[Direction; 5]>;
         },
     }
 }
-
-// fn bfs_numeric(directions: &[Direction], a: IVec2, b: IVec2) -> SmallVec<[Direction; 5]> {
-//     
-// }
 
 fn solve(seq: &str, depth: usize) -> u64 {
     let all_transitions = all_transitions(
