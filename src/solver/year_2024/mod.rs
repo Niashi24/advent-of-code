@@ -24,6 +24,7 @@ mod day_21;
 mod day_22;
 mod day_23;
 mod day_24;
+mod day_25;
 
 pub fn add_all(solver_database: &mut SolverDatabase) {
     let solvers = vec![
@@ -54,6 +55,7 @@ pub fn add_all(solver_database: &mut SolverDatabase) {
         (Day::new(22, 2024), Solver::separated((day_22::part_1, day_22::part_2))),
         (Day::new(23, 2024), Solver::combined(day_23::solve)),
         (Day::new(24, 2024), Solver::separated((day_24::part_1, ()))),
+        (Day::new(25, 2024), Solver::separated((day_25::part_1, ()))),
     ];
 
     for (day, solver) in solvers {
