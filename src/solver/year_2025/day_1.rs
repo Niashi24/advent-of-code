@@ -52,8 +52,10 @@ pub fn part_2(input: Box<dyn BufRead>) -> anyhow::Result<i64> {
         zeros += full_rots.abs();
 
         let old_pos = dial;
-        dial = (dial + (val - full_rots * 100)).rem_euclid(100);
+        dial = (dial + val).rem_euclid(100);
         
+        // check if landed directly at zeros
+        // or if we wrapped around (must have passed zero unless we were already at it)
         if dial == 0 || (old_pos != 0 && (dial > old_pos && val < 0) || (dial < old_pos && val > 0)) {
             zeros += 1;
         }
