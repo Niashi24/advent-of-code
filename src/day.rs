@@ -203,6 +203,7 @@ lazy_static! {
         let mut out = SolverDatabase::default();
         crate::solver::year_2021::add_all(&mut out);
         crate::solver::year_2024::add_all(&mut out);
+        crate::solver::year_2025::add_all(&mut out);
 
         out
     };
