@@ -25,5 +25,3 @@ fn solve_n(digits: &[u32], n: usize) -> u64 {
     }
     joltage
 }
-
-// fn first_max()
