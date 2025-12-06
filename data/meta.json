@@ -650,5 +650,16 @@
         }
       }
     }
+  },
+  "5-2025": {
+    "full": "data/2025/full-5-25.txt",
+    "example": {
+      "Single": {
+        "path": "data/2025/ex-5-25.txt",
+        "expected_answer": {
+          "Both": ["3", "14"]
+        }
+      }
+    }
   }
 }
