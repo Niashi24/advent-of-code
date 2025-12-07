@@ -6,6 +6,7 @@ mod day_3;
 mod day_4;
 mod day_5;
 mod day_6;
+mod day_7;
 
 pub fn add_all(database: &mut SolverDatabase) {
     database.add_solver(
@@ -20,4 +21,5 @@ pub fn add_all(database: &mut SolverDatabase) {
         Day::new(6, 2025),
         Solver::separated((day_6::part_1, day_6::part_2)),
     );
+    database.add_solver(Day::new(7, 2025), Solver::combined(day_7::solve));
 }
