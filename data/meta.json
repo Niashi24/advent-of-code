@@ -661,5 +661,16 @@
         }
       }
     }
+  },
+  "6-2025": {
+    "full": "data/2025/full-6-25.txt",
+    "example": {
+      "Single": {
+        "path": "data/2025/ex-6-25.txt",
+        "expected_answer": {
+          "Both": ["4277556", "3263827"]
+        }
+      }
+    }
   }
 }
