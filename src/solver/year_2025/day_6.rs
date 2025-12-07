@@ -21,8 +21,7 @@ pub fn part_2(input: Box<dyn BufRead>) -> anyhow::Result<u64> {
     // remove ending whitespace
     while lines
         .last()
-        .map(|x| x.chars().all(|c| c.is_whitespace()))
-        .unwrap_or(false)
+        .is_some_and(|x| x.chars().all(|c| c.is_whitespace()))
     {
         lines.pop();
     }
