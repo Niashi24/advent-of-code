@@ -19,9 +19,13 @@ fn solve_n(digits: &[u32], n: usize) -> u64 {
     let mut cur_range = digits;
     for i in 0..n {
         let search_range = cur_range.len() - (n - i) + 1;
-        let (j, max) = cur_range[0..search_range].iter().copied().first_max().unwrap();
+        let (j, max) = cur_range[0..search_range]
+            .iter()
+            .copied()
+            .first_max()
+            .unwrap();
         joltage = joltage * 10 + max as u64;
-        cur_range = &cur_range[j+1..];
+        cur_range = &cur_range[j + 1..];
     }
     joltage
 }

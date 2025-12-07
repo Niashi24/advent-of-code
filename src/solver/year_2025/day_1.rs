@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use anyhow::{bail};
+use anyhow::bail;
 
 pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<i64> {
     let mut dial = 50;
@@ -21,7 +21,7 @@ pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<i64> {
         };
 
         dial = (dial + val).rem_euclid(100);
-        
+
         if dial == 0 {
             zeros += 1;
         }
@@ -53,10 +53,11 @@ pub fn part_2(input: Box<dyn BufRead>) -> anyhow::Result<i64> {
 
         let old_pos = dial;
         dial = (dial + val).rem_euclid(100);
-        
+
         // check if landed directly at zeros
         // or if we wrapped around (must have passed zero unless we were already at it)
-        if dial == 0 || (old_pos != 0 && (dial > old_pos && val < 0) || (dial < old_pos && val > 0)) {
+        if dial == 0 || (old_pos != 0 && (dial > old_pos && val < 0) || (dial < old_pos && val > 0))
+        {
             zeros += 1;
         }
     }

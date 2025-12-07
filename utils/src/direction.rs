@@ -17,7 +17,7 @@ impl Direction {
             Direction::West => IVec2::NEG_X,
         }
     }
-    
+
     pub fn cw(self) -> Self {
         match self {
             Direction::North => Direction::East,

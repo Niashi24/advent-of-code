@@ -28,7 +28,7 @@ pub trait FirstMax<T> {
     fn first_max(self) -> Option<(usize, T)>;
 }
 
-impl <T: Ord, It: Iterator<Item=T>> FirstMax<T> for It {
+impl<T: Ord, It: Iterator<Item = T>> FirstMax<T> for It {
     fn first_max(mut self) -> Option<(usize, T)> {
         let mut max = self.next()?;
         let mut max_i = 0;
@@ -43,4 +43,4 @@ impl <T: Ord, It: Iterator<Item=T>> FirstMax<T> for It {
 
         Some((max_i, max))
     }
-} 
+}

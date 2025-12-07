@@ -7,7 +7,17 @@ pub mod day_12;
 mod day_13;
 pub mod day_14;
 mod day_15;
+mod day_16;
+mod day_17;
+mod day_18;
+mod day_19;
 mod day_2;
+mod day_20;
+mod day_21;
+mod day_22;
+mod day_23;
+mod day_24;
+mod day_25;
 mod day_3;
 mod day_4;
 mod day_5;
@@ -15,16 +25,6 @@ mod day_6;
 mod day_7;
 mod day_8;
 mod day_9;
-mod day_16;
-mod day_17;
-mod day_18;
-mod day_19;
-mod day_20;
-mod day_21;
-mod day_22;
-mod day_23;
-mod day_24;
-mod day_25;
 
 pub fn add_all(solver_database: &mut SolverDatabase) {
     let solvers = vec![
@@ -47,12 +47,18 @@ pub fn add_all(solver_database: &mut SolverDatabase) {
         (Day::new(14, 2024), Solver::separated((day_14::part_1, ()))),
         (Day::new(15, 2024), Solver::combined(day_15::part_1)),
         (Day::new(16, 2024), Solver::combined(day_16::solve)),
-        (Day::new(17, 2024), Solver::separated((day_17::part_1, day_17::part_2))),
+        (
+            Day::new(17, 2024),
+            Solver::separated((day_17::part_1, day_17::part_2)),
+        ),
         (Day::new(18, 2024), Solver::combined(day_18::solve)),
         (Day::new(19, 2024), Solver::combined(day_19::solve)),
         (Day::new(20, 2024), Solver::combined(day_20::solve)),
         (Day::new(21, 2024), Solver::combined(day_21::solution)),
-        (Day::new(22, 2024), Solver::separated((day_22::part_1, day_22::part_2))),
+        (
+            Day::new(22, 2024),
+            Solver::separated((day_22::part_1, day_22::part_2)),
+        ),
         (Day::new(23, 2024), Solver::combined(day_23::solve)),
         (Day::new(24, 2024), Solver::separated((day_24::part_1, ()))),
         (Day::new(25, 2024), Solver::separated((day_25::part_1, ()))),

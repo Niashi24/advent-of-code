@@ -4,17 +4,18 @@ use core::ops::RangeInclusive;
 
 use itertools::Itertools;
 
-
 pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<(usize, usize)> {
     let mut ranges: Vec<Ri> = Vec::new();
     let mut lines = input.lines().map(Result::unwrap);
     while let Some(line) = lines.next() {
         let line: String = line;
-        if line.is_empty() { break; }
+        if line.is_empty() {
+            break;
+        }
 
         let (start, end) = line.split_once("-").unwrap();
         let mut range = start.parse::<i64>()?..=end.parse::<i64>()?;
-        
+
         while let Some((i, _)) = ranges.iter().find_position(|r| intersects(r, &range)) {
             let r = ranges.swap_remove(i);
             range = merge(range, r);
@@ -23,7 +24,8 @@ pub fn part_1(input: Box<dyn BufRead>) -> anyhow::Result<(usize, usize)> {
         ranges.push(range);
     }
 
-    let p_1 = lines.map(|s: String| s.parse::<i64>().unwrap())
+    let p_1 = lines
+        .map(|s: String| s.parse::<i64>().unwrap())
         .filter(|i| ranges.iter().any(|r| r.contains(i)))
         .count();
 

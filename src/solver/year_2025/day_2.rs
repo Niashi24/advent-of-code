@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use anyhow::{Context};
+use anyhow::Context;
 
 pub fn solve(mut input: Box<dyn BufRead>) -> anyhow::Result<(i64, i64)> {
     let mut line = String::new();
@@ -11,7 +11,9 @@ pub fn solve(mut input: Box<dyn BufRead>) -> anyhow::Result<(i64, i64)> {
     let mut total_2 = 0;
     for range_str in line.split(",") {
         let (start, end) = {
-            let (start, end) = range_str.split_once("-").with_context(|| "no range delimiter for {range_str}")?;
+            let (start, end) = range_str
+                .split_once("-")
+                .with_context(|| "no range delimiter for {range_str}")?;
 
             (start.parse::<i64>()?, end.parse::<i64>()?)
         };
@@ -24,7 +26,6 @@ pub fn solve(mut input: Box<dyn BufRead>) -> anyhow::Result<(i64, i64)> {
                 total_2 += id;
             }
         }
-        
     }
 
     Ok((total_1, total_2))
@@ -50,7 +51,7 @@ fn is_invalid_id_2(i: i64) -> bool {
         }
 
         let (start, mut next) = s.split_at(s.len() / i);
-        for _ in 0..(i-1) {
+        for _ in 0..(i - 1) {
             let here;
             (here, next) = next.split_at(s.len() / i);
             if start != here {

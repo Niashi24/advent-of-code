@@ -8,11 +8,16 @@ mod day_5;
 mod day_6;
 
 pub fn add_all(database: &mut SolverDatabase) {
-    database.add_solver(Day::new(1, 2025), Solver::separated((day_1::part_1, day_1::part_2)));
+    database.add_solver(
+        Day::new(1, 2025),
+        Solver::separated((day_1::part_1, day_1::part_2)),
+    );
     database.add_solver(Day::new(2, 2025), Solver::combined(day_2::solve));
     database.add_solver(Day::new(3, 2025), Solver::combined(day_3::solve));
     database.add_solver(Day::new(4, 2025), Solver::combined(day_4::solve));
     database.add_solver(Day::new(5, 2025), Solver::combined(day_5::part_1));
-    database.add_solver(Day::new(6, 2025), Solver::separated((day_6::part_1, day_6::part_2)));
-
+    database.add_solver(
+        Day::new(6, 2025),
+        Solver::separated((day_6::part_1, day_6::part_2)),
+    );
 }
