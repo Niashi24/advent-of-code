@@ -1,5 +1,6 @@
 import heapq as hq
 import math
+from typing import TypeAlias
 
 input = """162,817,812
 57,618,57
@@ -28,18 +29,20 @@ with open("data/2025/full-8-25.txt") as f:
     input = f.read()
 limit = 1000
 
-def distance(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
+Point: TypeAlias = tuple[float, float, float]
+
+def distance(a: Point, b: Point) -> float:
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
 
-graph: dict[tuple[float, float, float], set[tuple[float, float, float]]] = {}
-coords: list[tuple[float, float, float]] = []
+graph: dict[Point, set[Point]] = {}
+coords: list[Point] = []
 
 for line in input.splitlines():
     [x, y, z] = [float(a) for a in line.split(",")]
     coords.append((x, y, z))
     pass
 
-pairs: list[tuple[float, tuple[tuple[float, float, float], tuple[float, float, float]]]] = []
+pairs: list[tuple[float, tuple[Point, Point]]] = []
 for i in range(0, len(coords)):
     a = coords[i]
     for j in range(i + 1, len(coords)):
@@ -47,9 +50,9 @@ for i in range(0, len(coords)):
         hq.heappush(pairs, (distance(a, b), (a, b)))
 
 def add_next(
-        pairs: list[tuple[float, tuple[tuple[float, float, float], tuple[float, float, float]]]],
-        circuits: list[set[tuple[float, float, float]]]
-        ) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+        pairs: list[tuple[float, tuple[Point, Point]]],
+        circuits: list[set[Point]]
+        ) -> tuple[Point, Point]:
     _, (a, b) = hq.heappop(pairs)
     [aset] = [c for c in circuits if a in c]
     if b in aset:
@@ -62,7 +65,7 @@ def add_next(
         aset.add(x)
     return (a, b)
 
-circuits: list[set[tuple[float, float, float]]] = [{c} for c in coords]
+circuits: list[set[Point]] = [{c} for c in coords]
 for _ in range(0, limit):
     _ = add_next(pairs, circuits)
 
